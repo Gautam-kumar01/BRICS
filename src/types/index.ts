@@ -115,6 +115,7 @@ export interface CitizenSubmission {
   aiProviderUsed?: string;
   updatedAt: string;
   provenance?: DataProvenanceInfo;
+  dataProvenance?: DataProvenanceInfo;
   dataStatus?: DataStatusType;
 }
 
