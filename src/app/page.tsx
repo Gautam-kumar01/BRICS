@@ -56,7 +56,7 @@ export default function HomePage() {
   // Homepage Direct Complaint Submission State
   const [sandboxText, setSandboxText] = useState('');
   const [sandboxLocation, setSandboxLocation] = useState<LiveLocationData | null>(null);
-  const [sandboxPhone, setSandboxPhone] = useState('+91 98234 56789');
+  const [sandboxPhone, setSandboxPhone] = useState('');
   const [isSubmittingSandbox, setIsSubmittingSandbox] = useState(false);
   const [submittedSandboxRecord, setSubmittedSandboxRecord] = useState<CitizenSubmission | null>(null);
   const [showSmsModal, setShowSmsModal] = useState(false);

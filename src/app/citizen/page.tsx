@@ -65,7 +65,7 @@ export default function CitizenPage() {
   const [longitude, setLongitude] = useState(74.7749);
   const [affectedPop, setAffectedPop] = useState(4500);
   const [aiConfidence, setAiConfidence] = useState(0.92);
-  const [contactValue, setContactValue] = useState('+91 98234 56789');
+  const [contactValue, setContactValue] = useState('');
   const [consentAnalytics, setConsentAnalytics] = useState(true);
   const [consentPublicMap, setConsentPublicMap] = useState(true);
   const [consentUpdates, setConsentUpdates] = useState(true);
