@@ -69,6 +69,9 @@ export default function ImpactPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 text-stone-900">
       
+      {/* Prototype Environment Notice */}
+      <PrototypeDisclosure variant="banner" />
+
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-stone-200 pb-6">
         <div>

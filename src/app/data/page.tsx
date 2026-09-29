@@ -1,8 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
 import DataStatusBadge from '@/components/DataStatusBadge';
 import DataProvenanceModal from '@/components/DataProvenanceModal';
 import PrototypeDisclosure from '@/components/PrototypeDisclosure';
@@ -33,9 +31,6 @@ export default function DataIntelligencePage() {
 
   return (
     <div className="min-h-screen bg-stone-950 text-stone-100 flex flex-col selection:bg-orange-500 selection:text-white">
-      <Header />
-      <PrototypeDisclosure />
-
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-12">
         {/* Page Hero */}
         <div className="space-y-4 max-w-3xl">
@@ -274,8 +269,6 @@ export default function DataIntelligencePage() {
           </div>
         </div>
       </main>
-
-      <Footer />
 
       {/* Provenance Modal */}
       <DataProvenanceModal

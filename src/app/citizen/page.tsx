@@ -380,6 +380,9 @@ export default function CitizenPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 space-y-10 text-stone-900">
       
+      {/* Prototype Environment Notice */}
+      <PrototypeDisclosure variant="banner" />
+
       {/* Page Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-orange-200 pb-6">
         <div>

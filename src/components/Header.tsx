@@ -18,7 +18,6 @@ import {
   X,
   User,
   LogOut,
-  Bell,
   Database
 } from 'lucide-react';
 import AISwitchboardModal from './AISwitchboardModal';
@@ -156,20 +155,8 @@ export default function Header() {
               })}
             </nav>
 
-            {/* Right Action Bar: Official Sign In, Notifications, Language Selector, Citizen Voice */}
-            <div className="flex items-center space-x-1 sm:space-x-1.5 shrink-0">
-
-              {/* Notification Bell with Badge Count */}
-              <button
-                onClick={() => setIsSwitchboardOpen(true)}
-                className="hidden sm:flex relative p-1.5 sm:p-2 rounded-xl bg-white border border-stone-200 text-stone-600 hover:text-orange-600 hover:border-orange-300 shadow-2xs transition-all"
-                title="System Notifications & Telemetry"
-              >
-                <Bell className="w-3.5 h-3.5" />
-                <span className="absolute -top-1 -right-1 flex items-center justify-center min-w-[15px] h-3.5 px-1 rounded-full bg-orange-600 text-white text-[9px] font-bold shadow-xs">
-                  2
-                </span>
-              </button>
+            {/* Right Action Bar: Official Sign In, Language Selector, Citizen Voice */}
+            <div className="flex items-center space-x-1.5 sm:space-x-2 shrink-0">
 
               {/* High-Visibility Language Selector Dropdown */}
               <div className="relative">

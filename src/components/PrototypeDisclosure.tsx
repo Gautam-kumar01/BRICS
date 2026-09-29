@@ -18,10 +18,10 @@ export function PrototypeDisclosure({
       <>
         <button
           onClick={() => setShowModal(true)}
-          className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-[10px] font-mono font-bold tracking-wider hover:bg-amber-500/20 transition-colors cursor-pointer ${className}`}
+          className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 text-stone-950 font-mono font-black text-[10px] tracking-wider shadow-sm hover:from-amber-400 hover:to-orange-400 transition-all cursor-pointer border border-amber-400 shrink-0 ${className}`}
           title="Click to view Prototype Environment & Synthetic Data Disclosure"
         >
-          <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping shrink-0" />
+          <span className="w-1.5 h-1.5 rounded-full bg-stone-950 animate-ping shrink-0" />
           <span>PROTOTYPE</span>
         </button>
 
@@ -45,7 +45,7 @@ export function PrototypeDisclosure({
                 <p className="font-semibold text-white">
                   This platform is a hackathon innovation prototype built for the Hack2Skills BRICS Innovation Challenge (Track 1: AI for Digital Public Infrastructure & Governance).
                 </p>
-                <div className="p-3.5 rounded-2xl bg-stone-950 border border-amber-500/20 text-amber-200/90 space-y-1">
+                <div className="p-3.5 rounded-2xl bg-stone-950 border border-amber-500/30 text-amber-200/90 space-y-1">
                   <p className="font-bold text-amber-300">Data & Official Integrity Statement:</p>
                   <p>
                     This demonstration uses synthetic, illustrative civic records and simulated infrastructure datasets. It does not represent live government systems, active public budgets, ongoing civil works, or real public officials.
@@ -59,7 +59,7 @@ export function PrototypeDisclosure({
               <div className="pt-2 border-t border-stone-800 flex justify-end">
                 <button
                   onClick={() => setShowModal(false)}
-                  className="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-stone-950 font-bold text-xs transition-colors"
+                  className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold text-xs transition-colors"
                 >
                   I Understand
                 </button>
@@ -73,13 +73,13 @@ export function PrototypeDisclosure({
 
   if (variant === 'card') {
     return (
-      <div className={`p-4 rounded-2xl bg-amber-950/20 border border-amber-500/30 text-xs text-amber-200 space-y-2 ${className}`}>
-        <div className="flex items-center justify-between font-bold text-amber-300">
+      <div className={`p-4 rounded-2xl bg-stone-900 border-2 border-amber-500/40 text-xs text-stone-200 space-y-2 shadow-md ${className}`}>
+        <div className="flex items-center justify-between font-bold text-amber-400">
           <div className="flex items-center gap-2">
             <span>🛡️</span>
             <span>Prototype Environment & Synthetic Data Disclosure</span>
           </div>
-          <span className="font-mono text-[10px] uppercase bg-amber-500/20 px-2 py-0.5 rounded border border-amber-500/40">
+          <span className="font-mono text-[10px] uppercase bg-amber-500/20 text-amber-300 px-2.5 py-0.5 rounded-full border border-amber-500/40 font-bold">
             Hack2Skills Pilot
           </span>
         </div>
@@ -92,8 +92,8 @@ export function PrototypeDisclosure({
 
   if (variant === 'inline') {
     return (
-      <span className={`inline-flex items-center gap-1.5 text-stone-400 text-[11px] font-mono ${className}`}>
-        <span className="w-1.5 h-1.5 rounded-full bg-amber-500/80" />
+      <span className={`inline-flex items-center gap-1.5 text-stone-700 dark:text-stone-300 text-[11px] font-mono font-medium ${className}`}>
+        <span className="w-2 h-2 rounded-full bg-amber-500 shrink-0" />
         <span>Prototype Demonstration • Synthetic & Simulated Datasets</span>
       </span>
     );
@@ -101,23 +101,23 @@ export function PrototypeDisclosure({
 
   // Default: banner
   return (
-    <div className={`w-full py-2 px-4 bg-amber-950/40 border-b border-amber-500/20 text-stone-300 text-xs flex items-center justify-between gap-4 ${className}`}>
-      <div className="flex items-center gap-2">
-        <span className="px-1.5 py-0.5 rounded bg-amber-500/20 border border-amber-500/30 text-amber-300 font-mono font-bold text-[9px] uppercase">
+    <div className={`w-full py-2.5 px-4 bg-stone-900 border-b border-amber-500/30 text-stone-100 text-xs flex items-center justify-between gap-4 shadow-sm ${className}`}>
+      <div className="flex items-center gap-2.5 flex-wrap">
+        <span className="px-2.5 py-0.5 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 text-stone-950 font-mono font-black text-[10px] uppercase tracking-wider shadow-2xs shrink-0">
           PROTOTYPE
         </span>
-        <span className="text-[11px] text-stone-300 hidden sm:inline">
+        <span className="text-[11px] text-stone-200 font-medium hidden sm:inline leading-relaxed">
           This demonstration uses synthetic and illustrative civic records and simulated infrastructure datasets. It does not represent live government systems, government officials, public budgets or active public works.
         </span>
-        <span className="text-[11px] text-stone-300 sm:hidden">
+        <span className="text-[11px] text-stone-200 font-medium sm:hidden">
           Prototype demonstration with simulated civic datasets.
         </span>
       </div>
       <button
         onClick={() => setShowModal(true)}
-        className="text-[10px] font-bold text-amber-400 hover:text-amber-300 underline font-mono shrink-0 cursor-pointer"
+        className="text-[11px] font-bold text-amber-400 hover:text-amber-300 underline font-mono shrink-0 cursor-pointer whitespace-nowrap"
       >
-        Learn More
+        Learn More →
       </button>
 
       {showModal && (
