@@ -76,15 +76,15 @@ export default function Header() {
   return (
     <>
       <header className="sticky top-0 z-40 w-full border-b border-orange-200/90 bg-white/95 backdrop-blur-md transition-all shadow-[0_2px_16px_rgba(249,115,22,0.05)]">
-        <div className="max-w-[1440px] mx-auto px-3 sm:px-4 lg:px-6">
-          <div className="flex items-center justify-between h-16 sm:h-17 gap-2">
+        <div className="w-full max-w-[1536px] mx-auto px-2 sm:px-4 lg:px-6">
+          <div className="flex items-center justify-between h-15 sm:h-16 gap-1.5 sm:gap-2">
             
             {/* Authentic BRICS Multilateral DPI Emblem Logo */}
-            <Link href="/" className="flex items-center space-x-2 sm:space-x-2.5 group shrink-0">
-              <div className="relative flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 min-w-[36px] min-h-[36px] rounded-2xl bg-gradient-to-br from-orange-500 via-amber-500 to-amber-600 p-0.5 shadow-md shadow-orange-500/25 transition-transform group-hover:scale-105 shrink-0">
-                <div className="w-full h-full bg-gradient-to-br from-stone-900 to-stone-950 rounded-[14px] flex items-center justify-center p-1.5 overflow-hidden relative">
+            <Link href="/" className="flex items-center space-x-1.5 sm:space-x-2 group shrink-0">
+              <div className="relative flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 min-w-[32px] min-h-[32px] rounded-xl bg-gradient-to-br from-orange-500 via-amber-500 to-amber-600 p-0.5 shadow-md shadow-orange-500/25 transition-transform group-hover:scale-105 shrink-0">
+                <div className="w-full h-full bg-gradient-to-br from-stone-900 to-stone-950 rounded-[10px] flex items-center justify-center p-1 overflow-hidden relative">
                   {/* SVG Multi-node BRICS Nexus Emblem */}
-                  <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 min-w-[24px] min-h-[24px] shrink-0">
+                  <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 min-w-[20px] min-h-[20px] shrink-0">
                     <circle cx="24" cy="24" r="18" stroke="rgba(249, 115, 22, 0.35)" strokeWidth="1.5" strokeDasharray="3 3" />
                     <circle cx="24" cy="24" r="12" stroke="rgba(245, 158, 11, 0.4)" strokeWidth="1.5" />
                     <circle cx="24" cy="8" r="3.5" fill="#f97316" />
@@ -101,11 +101,11 @@ export default function Header() {
               </div>
               <div className="flex flex-col">
                 <div className="flex items-center space-x-1.5">
-                  <span className="font-display font-extrabold text-lg sm:text-xl tracking-tight text-stone-900">BRICS</span>
-                  <span className="font-display font-bold text-lg sm:text-xl tracking-tight text-orange-600">CivicPulse</span>
+                  <span className="font-display font-extrabold text-base sm:text-lg tracking-tight text-stone-900">BRICS</span>
+                  <span className="font-display font-bold text-base sm:text-lg tracking-tight text-orange-600">CivicPulse</span>
                   <PrototypeDisclosure variant="badge" />
                 </div>
-                <span className="text-[10px] text-stone-500 font-semibold hidden 2xl:block leading-tight">
+                <span className="text-[9px] text-stone-500 font-semibold hidden 2xl:block leading-tight">
                   {t('header.subtitle')}
                 </span>
               </div>
@@ -120,7 +120,7 @@ export default function Header() {
                   <Link
                     key={link.href}
                     href={link.href}
-                    className={`flex items-center space-x-1 px-1.5 2xl:px-2 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all duration-150 ${
+                    className={`flex items-center space-x-1 px-1.5 2xl:px-2 py-1 rounded-lg text-[11px] 2xl:text-xs font-bold whitespace-nowrap transition-all duration-150 ${
                       isActive
                         ? 'bg-orange-50 text-orange-600 border border-orange-200 shadow-2xs'
                         : 'text-stone-700 hover:text-orange-600 hover:bg-orange-50/50 border border-transparent'
@@ -210,25 +210,25 @@ export default function Header() {
 
               {/* Official Role Login / User Badge & Authority Workspace Launcher */}
               {user ? (
-                <div className="relative">
+                <div className="relative shrink-0">
                   <button
                     type="button"
                     onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
-                    className="flex items-center space-x-2 bg-orange-50/90 hover:bg-orange-100/90 px-2.5 py-1.5 rounded-xl border-2 border-orange-300 hover:border-orange-500 shadow-2xs transition-all whitespace-nowrap cursor-pointer text-left"
+                    className="flex items-center space-x-1.5 bg-orange-50/90 hover:bg-orange-100/90 px-2 sm:px-2.5 py-1 rounded-xl border-2 border-orange-300 hover:border-orange-500 shadow-2xs transition-all whitespace-nowrap cursor-pointer text-left shrink-0"
                     title="Click to open Authority Dashboard & Profile"
                   >
                     <div className="w-6 h-6 rounded-lg bg-orange-600 text-white flex items-center justify-center font-mono font-bold text-xs shrink-0">
                       {user.name.charAt(0)}
                     </div>
                     <div className="flex flex-col text-left overflow-hidden">
-                      <span className="text-[11px] font-extrabold text-stone-900 leading-none truncate max-w-[95px] sm:max-w-[125px]">
+                      <span className="text-[10px] sm:text-[11px] font-extrabold text-stone-900 leading-none truncate max-w-[65px] sm:max-w-[90px] 2xl:max-w-[120px]">
                         {user.name}
                       </span>
-                      <span className="text-[9px] font-mono text-orange-700 uppercase leading-none mt-0.5 font-bold truncate max-w-[95px] sm:max-w-[125px]">
+                      <span className="text-[8px] sm:text-[9px] font-mono text-orange-700 uppercase leading-none mt-0.5 font-bold truncate max-w-[65px] sm:max-w-[90px] 2xl:max-w-[120px]">
                         {user.role.replace('_', ' ')}
                       </span>
                     </div>
-                    <ChevronDown className={`w-3 h-3 text-orange-700 transition-transform ${isProfileDropdownOpen ? 'rotate-180' : ''}`} />
+                    <ChevronDown className={`w-3 h-3 text-orange-700 shrink-0 transition-transform ${isProfileDropdownOpen ? 'rotate-180' : ''}`} />
                   </button>
 
                   {/* Interactive GovTech Authority Profile Dropdown Card */}
@@ -347,7 +347,7 @@ export default function Header() {
               ) : (
                 <Link
                   href="/login"
-                  className="flex items-center space-x-1.5 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl bg-white border-2 border-orange-300 hover:border-orange-500 hover:bg-orange-50 text-orange-900 text-xs font-extrabold shadow-2xs transition-all whitespace-nowrap active:scale-95"
+                  className="flex items-center space-x-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl bg-white border-2 border-orange-300 hover:border-orange-500 hover:bg-orange-50 text-orange-900 text-xs font-extrabold shadow-2xs transition-all whitespace-nowrap active:scale-95 shrink-0"
                 >
                   <User className="w-3.5 h-3.5 text-orange-600 shrink-0" />
                   <span>Sign In</span>
@@ -357,11 +357,10 @@ export default function Header() {
               {/* Citizen Voice Action Button */}
               <Link
                 href="/citizen"
-                className="flex items-center space-x-1 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white text-xs font-bold shadow-md shadow-orange-500/20 transition-all whitespace-nowrap active:scale-95 shrink-0"
+                className="flex items-center space-x-1 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white text-xs font-bold shadow-md shadow-orange-500/20 transition-all whitespace-nowrap active:scale-95 shrink-0"
               >
                 <Sparkles className="w-3.5 h-3.5 shrink-0" />
-                <span className="hidden sm:inline">{t('hero.voice_report_btn')}</span>
-                <span className="sm:hidden">Report</span>
+                <span className="inline">{t('hero.voice_report_btn')}</span>
               </Link>
 
               {/* Mobile Menu Drawer Toggle */}
