@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -10,6 +10,14 @@ export const metadata: Metadata = {
   description: 'Multilingual AI-assisted Digital Public Good turning citizen voice into defensible public infrastructure investment across BRICS member states.',
   keywords: ['BRICS', 'CivicPulse', 'Digital Public Infrastructure', 'GovTech', 'AI Governance', 'Urban Planning', 'Public Investment'],
   authors: [{ name: 'BRICS Innovation Track 1' }],
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
+  themeColor: '#fbf7f0',
 };
 
 export default function RootLayout({
@@ -27,11 +35,11 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="bg-[#fbf7f0] text-stone-900 flex flex-col min-h-screen antialiased selection:bg-orange-500 selection:text-white">
+      <body className="bg-[#fbf7f0] text-stone-900 flex flex-col min-h-screen antialiased selection:bg-orange-500 selection:text-white overflow-x-hidden w-full max-w-full">
         <LanguageProvider>
           <AuthProvider>
             <Header />
-            <main className="flex-1 w-full">
+            <main className="flex-1 w-full max-w-full overflow-x-hidden">
               {children}
             </main>
             <Footer />

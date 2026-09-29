@@ -77,14 +77,14 @@ export default function Header() {
     <>
       <header className="sticky top-0 z-40 w-full border-b border-orange-200/90 bg-white/95 backdrop-blur-md transition-all shadow-[0_2px_16px_rgba(249,115,22,0.05)]">
         <div className="w-full max-w-[1536px] mx-auto px-2 sm:px-4 lg:px-6">
-          <div className="flex items-center justify-between h-15 sm:h-16 gap-1.5 sm:gap-2">
+          <div className="flex items-center justify-between h-14 sm:h-16 gap-1 sm:gap-2">
             
             {/* Authentic BRICS Multilateral DPI Emblem Logo */}
-            <Link href="/" className="flex items-center space-x-1.5 sm:space-x-2 group shrink-0">
-              <div className="relative flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 min-w-[32px] min-h-[32px] rounded-xl bg-gradient-to-br from-orange-500 via-amber-500 to-amber-600 p-0.5 shadow-md shadow-orange-500/25 transition-transform group-hover:scale-105 shrink-0">
+            <Link href="/" className="flex items-center space-x-1.5 sm:space-x-2 group shrink-0 min-w-0">
+              <div className="relative flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-orange-500 via-amber-500 to-amber-600 p-0.5 shadow-md shadow-orange-500/25 transition-transform group-hover:scale-105 shrink-0">
                 <div className="w-full h-full bg-gradient-to-br from-stone-900 to-stone-950 rounded-[10px] flex items-center justify-center p-1 overflow-hidden relative">
                   {/* SVG Multi-node BRICS Nexus Emblem */}
-                  <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 min-w-[20px] min-h-[20px] shrink-0">
+                  <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 shrink-0">
                     <circle cx="24" cy="24" r="18" stroke="rgba(249, 115, 22, 0.35)" strokeWidth="1.5" strokeDasharray="3 3" />
                     <circle cx="24" cy="24" r="12" stroke="rgba(245, 158, 11, 0.4)" strokeWidth="1.5" />
                     <circle cx="24" cy="8" r="3.5" fill="#f97316" />
@@ -99,11 +99,11 @@ export default function Header() {
                   </svg>
                 </div>
               </div>
-              <div className="flex flex-col">
-                <div className="flex items-center space-x-1.5">
+              <div className="flex flex-col min-w-0">
+                <div className="flex items-center space-x-1.5 min-w-0">
                   <span className="font-display font-extrabold text-base sm:text-lg tracking-tight text-stone-900">BRICS</span>
                   <span className="font-display font-bold text-base sm:text-lg tracking-tight text-orange-600">CivicPulse</span>
-                  <PrototypeDisclosure variant="badge" />
+                  <PrototypeDisclosure variant="badge" className="hidden sm:inline-flex" />
                 </div>
                 <span className="text-[9px] text-stone-500 font-semibold hidden 2xl:block leading-tight">
                   {t('header.subtitle')}
@@ -111,8 +111,8 @@ export default function Header() {
               </div>
             </Link>
 
-            {/* Desktop Navigation Links (All 6 Primary Modules) */}
-            <nav className="hidden xl:flex items-center space-x-0.5 shrink-0">
+            {/* Desktop Navigation Links (All 7 Primary Modules) */}
+            <nav className="hidden xl:flex items-center space-x-0.5 2xl:space-x-1 shrink-0">
               {navLinks.map((link) => {
                 const Icon = link.icon;
                 const isActive = pathname === link.href;
@@ -137,23 +137,23 @@ export default function Header() {
             <div className="flex items-center space-x-1.5 sm:space-x-2 shrink-0">
 
               {/* High-Visibility Language Selector Dropdown */}
-              <div className="relative">
+              <div className="relative shrink-0">
                 <button
                   id="header-language-toggle"
                   onClick={() => setIsLangOpen(!isLangOpen)}
-                  className="flex items-center space-x-1 px-2 py-1 rounded-xl bg-gradient-to-r from-orange-50 to-amber-50 border-2 border-orange-300 hover:border-orange-500 text-xs text-stone-900 font-bold transition-all shadow-2xs whitespace-nowrap active:scale-95"
+                  className="flex items-center space-x-1 px-1.5 sm:px-2 py-1 rounded-xl bg-gradient-to-r from-orange-50 to-amber-50 border-2 border-orange-300 hover:border-orange-500 text-xs text-stone-900 font-bold transition-all shadow-2xs whitespace-nowrap active:scale-95"
                   title="Choose Language"
                 >
                   <Languages className="w-3.5 h-3.5 text-orange-600 shrink-0" />
-                  <span className="text-sm">{currentLangObj.flag}</span>
-                  <span className="uppercase text-[11px] font-mono font-extrabold text-stone-900">{language}</span>
-                  <ChevronDown className="w-3 h-3 text-stone-500" />
+                  <span className="text-xs sm:text-sm">{currentLangObj.flag}</span>
+                  <span className="uppercase text-[10px] sm:text-[11px] font-mono font-extrabold text-stone-900">{language}</span>
+                  <ChevronDown className="w-3 h-3 text-stone-500 hidden xs:block" />
                 </button>
 
                 {isLangOpen && (
                   <div 
                     id="header-language-dropdown"
-                    className="absolute right-0 top-full mt-2 w-64 rounded-2xl bg-white border-2 border-orange-200 shadow-2xl p-2 z-[999] animate-in fade-in slide-in-from-top-2 duration-150"
+                    className="absolute right-0 top-full mt-2 w-60 sm:w-64 max-h-[75vh] overflow-y-auto rounded-2xl bg-white border-2 border-orange-200 shadow-2xl p-2 z-[999] animate-in fade-in slide-in-from-top-2 duration-150"
                   >
                     <div className="px-2.5 py-1.5 text-[10px] font-extrabold text-orange-800 uppercase tracking-wider border-b border-orange-100 mb-1.5 flex items-center justify-between">
                       <span>🌐 BRICS Pilot Languages</span>
@@ -189,16 +189,17 @@ export default function Header() {
               {/* Official Role Login / User Badge & Authority Workspace Launcher */}
               {user ? (
                 <div className="relative shrink-0">
+                  {/* On Mobile: Compact Avatar Icon; On Tablet/Desktop: Full Pill Badge */}
                   <button
                     type="button"
                     onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
-                    className="flex items-center space-x-1.5 bg-orange-50 hover:bg-orange-100 px-2 py-1 rounded-xl border-2 border-orange-300 hover:border-orange-500 shadow-2xs transition-all whitespace-nowrap cursor-pointer text-left shrink-0"
+                    className="flex items-center space-x-1.5 bg-orange-50 hover:bg-orange-100 p-1 sm:px-2 sm:py-1 rounded-xl border-2 border-orange-300 hover:border-orange-500 shadow-2xs transition-all whitespace-nowrap cursor-pointer text-left shrink-0"
                     title="Click to open Authority Dashboard & Profile"
                   >
-                    <div className="w-5 h-5 rounded-lg bg-orange-600 text-white flex items-center justify-center font-mono font-bold text-[10px] shrink-0">
+                    <div className="w-6 h-6 sm:w-5 sm:h-5 rounded-lg bg-orange-600 text-white flex items-center justify-center font-mono font-bold text-[11px] sm:text-[10px] shrink-0">
                       {user.name.charAt(0)}
                     </div>
-                    <div className="flex flex-col text-left overflow-hidden">
+                    <div className="hidden sm:flex flex-col text-left overflow-hidden">
                       <span className="text-[10px] font-extrabold text-stone-900 leading-none truncate max-w-[55px] xl:max-w-[70px] 2xl:max-w-[100px]">
                         {user.name}
                       </span>
@@ -211,7 +212,7 @@ export default function Header() {
 
                   {/* Interactive GovTech Authority Profile Dropdown Card */}
                   {isProfileDropdownOpen && (
-                    <div className="absolute right-0 top-full mt-2 w-80 sm:w-88 rounded-3xl bg-white border-2 border-orange-300 shadow-2xl p-5 z-[999] animate-in fade-in slide-in-from-top-2 duration-150 space-y-4 text-stone-900">
+                    <div className="absolute right-0 top-full mt-2 w-72 sm:w-88 max-w-[calc(100vw-20px)] rounded-3xl bg-white border-2 border-orange-300 shadow-2xl p-4 sm:p-5 z-[999] animate-in fade-in slide-in-from-top-2 duration-150 space-y-4 text-stone-900">
                       
                       {/* Dropdown Header */}
                       <div className="flex items-start justify-between border-b border-orange-100 pb-3">
@@ -222,9 +223,9 @@ export default function Header() {
                           }`}>
                             {user.role === 'super_admin' ? '🏛️' : user.role === 'district_collector' ? '🏢' : '👷'}
                           </div>
-                          <div>
-                            <h4 className="font-extrabold text-stone-950 text-sm leading-tight">{user.name}</h4>
-                            <p className="text-[11px] font-mono text-stone-500 mt-0.5">{user.email}</p>
+                          <div className="min-w-0">
+                            <h4 className="font-extrabold text-stone-950 text-sm leading-tight truncate">{user.name}</h4>
+                            <p className="text-[11px] font-mono text-stone-500 mt-0.5 truncate">{user.email}</p>
                             <span className={`inline-block text-[9px] font-mono font-bold px-2 py-0.5 rounded-full uppercase mt-1 ${
                               user.role === 'super_admin' ? 'bg-purple-100 text-purple-900 border border-purple-300' :
                               user.role === 'district_collector' ? 'bg-orange-100 text-orange-900 border border-orange-300' :
@@ -240,7 +241,7 @@ export default function Header() {
                       <div className="space-y-2 text-xs bg-orange-50/50 p-3 rounded-2xl border border-orange-200">
                         <div className="flex items-center justify-between text-[11px]">
                           <span className="text-stone-500 font-medium">Territory Scope:</span>
-                          <span className="font-bold text-stone-900 bg-white px-2 py-0.5 rounded border border-orange-200 text-right truncate max-w-[160px]">
+                          <span className="font-bold text-stone-900 bg-white px-2 py-0.5 rounded border border-orange-200 text-right truncate max-w-[150px]">
                             {user.assignedDistrict ? `${user.assignedDistrict} (${user.assignedCountry})` : 'All BRICS Districts'}
                           </span>
                         </div>
@@ -257,7 +258,7 @@ export default function Header() {
                         {user.assignedDepartment && (
                           <div className="flex items-center justify-between text-[11px]">
                             <span className="text-stone-500 font-medium">Department:</span>
-                            <span className="font-bold text-stone-800 text-right truncate max-w-[160px]">
+                            <span className="font-bold text-stone-800 text-right truncate max-w-[150px]">
                               {user.assignedDepartment}
                             </span>
                           </div>
@@ -274,8 +275,8 @@ export default function Header() {
                         onClick={() => setIsProfileDropdownOpen(false)}
                         className="w-full py-2.5 rounded-xl bg-gradient-to-r from-orange-600 via-amber-600 to-orange-600 hover:from-orange-700 hover:to-amber-700 text-white font-extrabold text-xs flex items-center justify-center space-x-1.5 shadow-md shadow-orange-600/20 transition-all cursor-pointer"
                       >
-                        <ShieldCheck className="w-4 h-4" />
-                        <span>
+                        <ShieldCheck className="w-4 h-4 shrink-0" />
+                        <span className="truncate">
                           {user.role === 'super_admin' ? 'Open Central Governance Console' :
                            user.role === 'district_collector' ? `Open ${user.assignedDistrict || 'District'} Operations` :
                            'Open Field Work Orders'}
@@ -325,17 +326,17 @@ export default function Header() {
               ) : (
                 <Link
                   href="/login"
-                  className="flex items-center space-x-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl bg-white border-2 border-orange-300 hover:border-orange-500 hover:bg-orange-50 text-orange-900 text-xs font-extrabold shadow-2xs transition-all whitespace-nowrap active:scale-95 shrink-0"
+                  className="hidden sm:flex items-center space-x-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl bg-white border-2 border-orange-300 hover:border-orange-500 hover:bg-orange-50 text-orange-900 text-xs font-extrabold shadow-2xs transition-all whitespace-nowrap active:scale-95 shrink-0"
                 >
                   <User className="w-3.5 h-3.5 text-orange-600 shrink-0" />
                   <span>Sign In</span>
                 </Link>
               )}
 
-              {/* Citizen Voice Action Button */}
+              {/* Citizen Voice Action Button (Visible on Tablet/Desktop, accessed via Drawer & Hero on Mobile) */}
               <Link
                 href="/citizen"
-                className="flex items-center space-x-1 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white text-xs font-bold shadow-md shadow-orange-500/20 transition-all whitespace-nowrap active:scale-95 shrink-0"
+                className="hidden md:flex items-center space-x-1 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white text-xs font-bold shadow-md shadow-orange-500/20 transition-all whitespace-nowrap active:scale-95 shrink-0"
               >
                 <Sparkles className="w-3.5 h-3.5 shrink-0" />
                 <span className="inline">{t('hero.voice_report_btn')}</span>
@@ -344,11 +345,11 @@ export default function Header() {
               {/* Mobile Menu Drawer Toggle Button */}
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="xl:hidden p-1.5 sm:p-2 rounded-xl bg-white border border-stone-200 text-stone-700 hover:text-orange-600 shadow-2xs shrink-0"
+                className="xl:hidden p-1.5 sm:p-2 rounded-xl bg-white border border-stone-200 text-stone-700 hover:text-orange-600 shadow-2xs shrink-0 transition-transform active:scale-95"
                 title="Open Menu"
                 aria-label="Toggle navigation menu"
               >
-                {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+                {isMobileMenuOpen ? <X className="w-5 h-5 text-orange-600" /> : <Menu className="w-5 h-5" />}
               </button>
 
             </div>
@@ -358,37 +359,51 @@ export default function Header() {
 
         {/* Mobile Navigation Drawer */}
         {isMobileMenuOpen && (
-          <div className="xl:hidden border-t border-stone-200 bg-white/98 backdrop-blur-2xl px-4 py-4 space-y-3 shadow-xl max-h-[85vh] overflow-y-auto">
+          <div className="xl:hidden border-t border-orange-200 bg-white/98 backdrop-blur-2xl px-4 py-4 space-y-3.5 shadow-xl max-h-[85vh] overflow-y-auto animate-in slide-in-from-top-2 duration-150">
             
             {/* Mobile Official Authority / Citizen Auth Status */}
             {user ? (
-              <div className="p-3 bg-orange-50 rounded-2xl border border-orange-200 flex items-center justify-between">
-                <div className="flex items-center space-x-2.5">
-                  <div className="w-8 h-8 rounded-xl bg-orange-600 text-white flex items-center justify-center font-bold text-xs">
-                    {user.name.charAt(0)}
+              <div className="p-3.5 bg-orange-50 rounded-2xl border border-orange-200 space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2.5">
+                    <div className="w-8 h-8 rounded-xl bg-orange-600 text-white flex items-center justify-center font-bold text-xs shrink-0">
+                      {user.name.charAt(0)}
+                    </div>
+                    <div className="min-w-0">
+                      <div className="text-xs font-extrabold text-stone-900 truncate">{user.name}</div>
+                      <div className="text-[10px] font-mono text-orange-700 uppercase font-bold">{user.role.replace('_', ' ')}</div>
+                    </div>
                   </div>
-                  <div>
-                    <div className="text-xs font-extrabold text-stone-900">{user.name}</div>
-                    <div className="text-[10px] font-mono text-orange-700 uppercase font-bold">{user.role.replace('_', ' ')}</div>
-                  </div>
+                  <button
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      logout();
+                    }}
+                    className="px-2.5 py-1 rounded-lg bg-red-50 text-red-700 text-xs font-bold border border-red-200"
+                  >
+                    Sign Out
+                  </button>
                 </div>
-                <button
-                  onClick={() => {
-                    setIsMobileMenuOpen(false);
-                    logout();
-                  }}
-                  className="px-2.5 py-1 rounded-lg bg-red-50 text-red-700 text-xs font-bold border border-red-200"
+
+                <Link
+                  href={user.role === 'super_admin' ? '/governance' : '/operations'}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="w-full py-2 rounded-xl bg-orange-600 text-white font-bold text-xs flex items-center justify-center space-x-1.5 shadow-xs"
                 >
-                  Sign Out
-                </button>
+                  <ShieldCheck className="w-3.5 h-3.5" />
+                  <span>Open Authority Dashboard</span>
+                </Link>
               </div>
             ) : (
-              <div className="p-3 bg-stone-50 rounded-2xl border border-stone-200 flex items-center justify-between">
-                <span className="text-xs text-stone-600 font-medium">Public Citizen Mode</span>
+              <div className="p-3.5 bg-stone-50 rounded-2xl border border-stone-200 flex items-center justify-between">
+                <div className="flex flex-col">
+                  <span className="text-xs text-stone-800 font-bold">Public Citizen Mode</span>
+                  <span className="text-[10px] text-stone-500 font-medium">Reporting & Tracker active</span>
+                </div>
                 <Link
                   href="/login"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="px-3 py-1.5 rounded-xl bg-orange-600 text-white text-xs font-bold flex items-center space-x-1"
+                  className="px-3.5 py-1.5 rounded-xl bg-orange-600 text-white text-xs font-bold flex items-center space-x-1.5 shadow-xs"
                 >
                   <User className="w-3.5 h-3.5" />
                   <span>Authority Login</span>
@@ -423,6 +438,9 @@ export default function Header() {
 
             {/* Mobile Navigation Links */}
             <div className="space-y-1">
+              <div className="text-[10px] font-mono font-bold text-stone-500 uppercase tracking-wider px-2 pt-1 pb-0.5">
+                Navigation Modules
+              </div>
               {navLinks.map((link) => {
                 const Icon = link.icon;
                 const isActive = pathname === link.href;
@@ -431,14 +449,14 @@ export default function Header() {
                     key={link.href}
                     href={link.href}
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-bold ${
+                    className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-bold transition-colors ${
                       isActive
                         ? 'bg-orange-100 text-orange-800 border border-orange-300'
                         : 'text-stone-800 hover:bg-orange-50'
                     }`}
                   >
                     <div className="flex items-center space-x-3">
-                      <Icon className="w-4 h-4 text-orange-600" />
+                      <Icon className="w-4 h-4 text-orange-600 shrink-0" />
                       <span>{link.label}</span>
                     </div>
                   </Link>
@@ -446,11 +464,12 @@ export default function Header() {
               })}
             </div>
             
+            {/* Quick Citizen Action */}
             <div className="pt-2 border-t border-stone-200">
               <Link
                 href="/citizen"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="w-full py-2.5 rounded-xl bg-gradient-to-r from-orange-500 to-amber-600 text-white text-xs font-bold flex items-center justify-center space-x-2 shadow-md shadow-orange-500/20"
+                className="w-full py-2.5 rounded-xl bg-gradient-to-r from-orange-500 to-amber-600 text-white text-xs font-bold flex items-center justify-center space-x-2 shadow-md shadow-orange-500/20 active:scale-98 transition-transform"
               >
                 <Sparkles className="w-4 h-4" />
                 <span>{t('hero.voice_report_btn')}</span>
