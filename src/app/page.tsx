@@ -3,15 +3,15 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { 
-  ArrowRight, 
-  Sparkles, 
-  ShieldCheck, 
-  CheckCircle2, 
-  Globe2, 
-  MapPin, 
-  Search, 
-  Clock, 
+import {
+  ArrowRight,
+  Sparkles,
+  ShieldCheck,
+  CheckCircle2,
+  Globe2,
+  MapPin,
+  Search,
+  Clock,
   TrendingUp,
   Smartphone,
   Phone,
@@ -91,7 +91,7 @@ export default function HomePage() {
             setTrackCodeInput(data[0].referenceCode);
           }
         }
-      } catch (e) {}
+      } catch (e) { }
     }
     loadFeed();
   }, []);
@@ -223,7 +223,7 @@ export default function HomePage() {
           dataAnalytics: true,
           publicMapAggregation: true,
           contactForUpdates: true,
-          contactValue: sandboxPhone || '+91 98234 56789',
+          contactValue: sandboxPhone || ''
         },
       };
 
@@ -251,7 +251,7 @@ export default function HomePage() {
             spread: 80,
             origin: { y: 0.6 }
           });
-        } catch (e) {}
+        } catch (e) { }
       }
     } catch (err: any) {
       alert(`Submission error: ${err.message}`);
@@ -324,17 +324,17 @@ export default function HomePage() {
   ];
 
   const filteredSubmissions = searchQuery.trim()
-    ? liveSubmissions.filter(s => 
-        s.subcategory.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        s.location.district.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        s.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (s.location.pincode && s.location.pincode.includes(searchQuery))
-      )
+    ? liveSubmissions.filter(s =>
+      s.subcategory.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      s.location.district.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      s.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (s.location.pincode && s.location.pincode.includes(searchQuery))
+    )
     : liveSubmissions;
 
   return (
     <div className="space-y-16 sm:space-y-24 pb-20 text-stone-900">
-      
+
       {/* Top Prototype & Demo Disclosure Banner */}
       <PrototypeDisclosure />
 
@@ -342,7 +342,7 @@ export default function HomePage() {
       {/* 1. HERO SECTION: Problem Statement Alignment & Glassmorphism         */}
       {/* ==================================================================== */}
       <section className="relative pt-8 sm:pt-14 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto text-center space-y-8">
-        
+
         {/* Ambient Top Glow */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl h-72 bg-gradient-to-r from-orange-300/20 via-amber-200/25 to-orange-300/20 rounded-full blur-3xl -z-10 pointer-events-none" />
 
@@ -374,7 +374,7 @@ export default function HomePage() {
               className="w-full bg-transparent text-sm text-stone-900 placeholder:text-stone-400 focus:outline-none font-semibold"
             />
             {searchQuery ? (
-              <button 
+              <button
                 onClick={() => setSearchQuery('')}
                 className="px-3 py-1.5 text-xs text-stone-500 hover:text-stone-800 font-bold cursor-pointer"
               >
@@ -398,11 +398,10 @@ export default function HomePage() {
               <button
                 key={tag}
                 onClick={() => setSearchQuery(tag)}
-                className={`text-xs font-semibold px-3.5 py-1.5 rounded-full border transition-all cursor-pointer ${
-                  searchQuery === tag
+                className={`text-xs font-semibold px-3.5 py-1.5 rounded-full border transition-all cursor-pointer ${searchQuery === tag
                     ? 'bg-orange-600 border-orange-600 text-white font-bold shadow-sm'
                     : 'bg-white/80 backdrop-blur-sm border-orange-200 text-stone-800 hover:border-orange-400 hover:text-orange-700 shadow-2xs'
-                }`}
+                  }`}
               >
                 {tag}
               </button>
@@ -412,7 +411,7 @@ export default function HomePage() {
 
         {/* 4 Glassmorphic KPI Stat Cards Row */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 pt-4 max-w-5xl mx-auto text-left">
-          
+
           {/* Card 1: Aggregated Requests */}
           <div className="bg-white/85 backdrop-blur-xl border border-orange-200/90 rounded-3xl p-5 shadow-[0_8px_24px_rgba(249,115,22,0.05)] hover:shadow-[0_12px_32px_rgba(249,115,22,0.12)] hover:border-orange-400 transition-all flex items-center space-x-4">
             <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-orange-100 to-orange-50 border border-orange-200 flex items-center justify-center text-orange-600 shrink-0 shadow-2xs">
@@ -482,7 +481,7 @@ export default function HomePage() {
       {/* ==================================================================== */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="rounded-3xl bg-gradient-to-br from-stone-950 via-[#26130B] to-stone-950 text-white p-6 sm:p-10 border-2 border-orange-500/40 shadow-2xl space-y-6">
-          
+
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-orange-500/20 pb-6">
             <div className="space-y-1">
               <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-orange-950/80 text-orange-300 text-xs font-mono font-bold border border-orange-500/40">
@@ -549,7 +548,7 @@ export default function HomePage() {
           {/* Tracked Record Stepper Display */}
           {trackedSubmission && (
             <div className="rounded-3xl bg-black/40 border border-orange-500/30 p-6 space-y-6 animate-in fade-in zoom-in-95 duration-200">
-              
+
               {/* Card Header */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-orange-500/20 pb-4">
                 <div className="space-y-0.5">
@@ -557,11 +556,10 @@ export default function HomePage() {
                     <span className="text-sm sm:text-base font-mono font-extrabold text-orange-400">
                       {trackedSubmission.referenceCode}
                     </span>
-                    <span className={`text-[10px] font-mono px-2.5 py-0.5 rounded-full font-bold uppercase ${
-                      trackedSubmission.urgency === 'critical' ? 'bg-red-950 text-red-300 border border-red-700' :
-                      trackedSubmission.urgency === 'high' ? 'bg-amber-950 text-amber-300 border border-amber-700' :
-                      'bg-emerald-950 text-emerald-300 border border-emerald-700'
-                    }`}>
+                    <span className={`text-[10px] font-mono px-2.5 py-0.5 rounded-full font-bold uppercase ${trackedSubmission.urgency === 'critical' ? 'bg-red-950 text-red-300 border border-red-700' :
+                        trackedSubmission.urgency === 'high' ? 'bg-amber-950 text-amber-300 border border-amber-700' :
+                          'bg-emerald-950 text-emerald-300 border border-emerald-700'
+                      }`}>
                       {trackedSubmission.urgency} Urgency
                     </span>
                   </div>
@@ -583,7 +581,7 @@ export default function HomePage() {
 
               {/* 4-Stage Interactive Stepper Timeline */}
               <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 pt-2">
-                
+
                 {/* Step 1 */}
                 <div className="p-3.5 rounded-2xl bg-stone-900/90 border border-emerald-500/40 space-y-1.5">
                   <div className="flex items-center justify-between">
@@ -605,15 +603,13 @@ export default function HomePage() {
                 </div>
 
                 {/* Step 3 */}
-                <div className={`p-3.5 rounded-2xl border space-y-1.5 ${
-                  ['triaged', 'clustered', 'in_progress', 'resolved'].includes(trackedSubmission.status)
+                <div className={`p-3.5 rounded-2xl border space-y-1.5 ${['triaged', 'clustered', 'in_progress', 'resolved'].includes(trackedSubmission.status)
                     ? 'bg-stone-900/90 border-emerald-500/40'
                     : 'bg-stone-900/40 border-stone-800 opacity-60'
-                }`}>
+                  }`}>
                   <div className="flex items-center justify-between">
-                    <span className={`w-6 h-6 rounded-full font-bold text-xs flex items-center justify-center font-mono ${
-                      ['triaged', 'clustered', 'in_progress', 'resolved'].includes(trackedSubmission.status) ? 'bg-emerald-500 text-stone-950' : 'bg-stone-800 text-stone-400'
-                    }`}>3</span>
+                    <span className={`w-6 h-6 rounded-full font-bold text-xs flex items-center justify-center font-mono ${['triaged', 'clustered', 'in_progress', 'resolved'].includes(trackedSubmission.status) ? 'bg-emerald-500 text-stone-950' : 'bg-stone-800 text-stone-400'
+                      }`}>3</span>
                     {['triaged', 'clustered', 'in_progress', 'resolved'].includes(trackedSubmission.status) ? (
                       <CheckCircle2 className="w-4 h-4 text-emerald-400" />
                     ) : (
@@ -627,15 +623,13 @@ export default function HomePage() {
                 </div>
 
                 {/* Step 4 */}
-                <div className={`p-3.5 rounded-2xl border space-y-1.5 ${
-                  trackedSubmission.status === 'resolved'
+                <div className={`p-3.5 rounded-2xl border space-y-1.5 ${trackedSubmission.status === 'resolved'
                     ? 'bg-stone-900/90 border-emerald-500/40'
                     : 'bg-stone-900/40 border-stone-800 opacity-60'
-                }`}>
+                  }`}>
                   <div className="flex items-center justify-between">
-                    <span className={`w-6 h-6 rounded-full font-bold text-xs flex items-center justify-center font-mono ${
-                      trackedSubmission.status === 'resolved' ? 'bg-emerald-500 text-stone-950' : 'bg-stone-800 text-stone-400'
-                    }`}>4</span>
+                    <span className={`w-6 h-6 rounded-full font-bold text-xs flex items-center justify-center font-mono ${trackedSubmission.status === 'resolved' ? 'bg-emerald-500 text-stone-950' : 'bg-stone-800 text-stone-400'
+                      }`}>4</span>
                     {trackedSubmission.status === 'resolved' ? (
                       <CheckCircle2 className="w-4 h-4 text-emerald-400" />
                     ) : (
@@ -703,11 +697,10 @@ export default function HomePage() {
               <button
                 key={terr.id}
                 onClick={() => setActivePilotTerritory(terr.id as any)}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                  activePilotTerritory === terr.id
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${activePilotTerritory === terr.id
                     ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-sm'
                     : 'bg-white border border-stone-200 text-stone-700 hover:bg-orange-50'
-                }`}
+                  }`}
               >
                 {terr.label}
               </button>
@@ -717,43 +710,43 @@ export default function HomePage() {
 
         {/* Dynamic Territory Details Card */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          
+
           {/* Card 1: Jurisdiction Profile */}
           <div className="p-6 rounded-3xl bg-white border-2 border-orange-200 shadow-sm space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-xs font-mono uppercase font-bold text-orange-700 bg-orange-50 px-2.5 py-0.5 rounded-full border border-orange-200">
                 {activePilotTerritory === 'jehanabad' ? 'Tier-3 Rural-Urban Pilot' :
-                 activePilotTerritory === 'dhule' ? 'Aspirational District Pilot' :
-                 activePilotTerritory === 'tshwane' ? 'Metropolitan Municipality' : 'Coastal Urban Drainage'}
+                  activePilotTerritory === 'dhule' ? 'Aspirational District Pilot' :
+                    activePilotTerritory === 'tshwane' ? 'Metropolitan Municipality' : 'Coastal Urban Drainage'}
               </span>
               <span className="text-lg">
                 {activePilotTerritory === 'jehanabad' || activePilotTerritory === 'dhule' ? '🇮🇳' :
-                 activePilotTerritory === 'tshwane' ? '🇿🇦' : '🇧🇷'}
+                  activePilotTerritory === 'tshwane' ? '🇿🇦' : '🇧🇷'}
               </span>
             </div>
 
             <h3 className="font-display font-extrabold text-xl text-stone-900">
               {activePilotTerritory === 'jehanabad' ? 'Jehanabad District' :
-               activePilotTerritory === 'dhule' ? 'Dhule District (Dhulia)' :
-               activePilotTerritory === 'tshwane' ? 'City of Tshwane Metropolitan' : 'Recife Metropolitan'}
+                activePilotTerritory === 'dhule' ? 'Dhule District (Dhulia)' :
+                  activePilotTerritory === 'tshwane' ? 'City of Tshwane Metropolitan' : 'Recife Metropolitan'}
             </h3>
 
             <p className="text-xs text-stone-600 font-medium leading-relaxed">
               {activePilotTerritory === 'jehanabad'
                 ? 'High-density rural-urban corridor in Bihar. Focus on potable water pipeline restoration in Kako Block and municipal open storm drainage.'
                 : activePilotTerritory === 'dhule'
-                ? 'Agricultural infrastructure corridor in North Maharashtra. Focus on culvert bridge subsidence and rural distribution power grids.'
-                : activePilotTerritory === 'tshwane'
-                ? 'Metropolitan district in Gauteng, South Africa. Addressing municipal water pressure deficits, township clinics, and energy microgrids.'
-                : 'Coastal city in Pernambuco, Brazil. Deploying multi-criteria flood drainage and bridge retrofitting.'}
+                  ? 'Agricultural infrastructure corridor in North Maharashtra. Focus on culvert bridge subsidence and rural distribution power grids.'
+                  : activePilotTerritory === 'tshwane'
+                    ? 'Metropolitan district in Gauteng, South Africa. Addressing municipal water pressure deficits, township clinics, and energy microgrids.'
+                    : 'Coastal city in Pernambuco, Brazil. Deploying multi-criteria flood drainage and bridge retrofitting.'}
             </p>
 
             <div className="pt-2 border-t border-stone-100 flex items-center justify-between text-xs">
               <span className="text-stone-500">Designated Authority:</span>
               <span className="font-bold text-stone-900">
                 {activePilotTerritory === 'jehanabad' ? 'Demo District Authority (Jehanabad)' :
-                 activePilotTerritory === 'dhule' ? 'Demo District Authority (Dhule)' :
-                 activePilotTerritory === 'tshwane' ? 'Demo Municipal Authority (Tshwane)' : 'Demo Infrastructure Officer (Recife)'}
+                  activePilotTerritory === 'dhule' ? 'Demo District Authority (Dhule)' :
+                    activePilotTerritory === 'tshwane' ? 'Demo Municipal Authority (Tshwane)' : 'Demo Infrastructure Officer (Recife)'}
               </span>
             </div>
           </div>
@@ -764,8 +757,8 @@ export default function HomePage() {
               <span className="font-bold text-stone-600">Allocated Municipal Capital Budget:</span>
               <span className="font-mono font-extrabold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded border border-emerald-200">
                 {activePilotTerritory === 'jehanabad' ? '$1,800,000 USD' :
-                 activePilotTerritory === 'dhule' ? '$2,200,000 USD' :
-                 activePilotTerritory === 'tshwane' ? '$3,500,000 USD' : '$4,100,000 USD'}
+                  activePilotTerritory === 'dhule' ? '$2,200,000 USD' :
+                    activePilotTerritory === 'tshwane' ? '$3,500,000 USD' : '$4,100,000 USD'}
               </span>
             </div>
 
@@ -775,14 +768,14 @@ export default function HomePage() {
                   <span>Primary Demand Hotspot:</span>
                   <span className="text-orange-700 uppercase font-mono">
                     {activePilotTerritory === 'jehanabad' ? 'WATER & DRAINAGE' :
-                     activePilotTerritory === 'dhule' ? 'ROADS & POWER' :
-                     activePilotTerritory === 'tshwane' ? 'WATER PRESSURE' : 'FLOOD BASIN'}
+                      activePilotTerritory === 'dhule' ? 'ROADS & POWER' :
+                        activePilotTerritory === 'tshwane' ? 'WATER PRESSURE' : 'FLOOD BASIN'}
                   </span>
                 </div>
                 <p className="text-[11px] text-stone-600">
                   {activePilotTerritory === 'jehanabad' ? 'Kako Block & Court Area Basin (PIN 804408)' :
-                   activePilotTerritory === 'dhule' ? 'Mohadi River Corridor (PIN 424001)' :
-                   activePilotTerritory === 'tshwane' ? 'Mamelodi East Ward 14 (PIN 0122)' : 'Boa Viagem Canal'}
+                    activePilotTerritory === 'dhule' ? 'Mohadi River Corridor (PIN 424001)' :
+                      activePilotTerritory === 'tshwane' ? 'Mamelodi East Ward 14 (PIN 0122)' : 'Boa Viagem Canal'}
                 </p>
               </div>
 
@@ -791,7 +784,7 @@ export default function HomePage() {
                   <span className="text-stone-500">Verified Signals:</span>
                   <strong className="text-stone-900">
                     {activePilotTerritory === 'jehanabad' ? '4 Verified Complaints' :
-                     activePilotTerritory === 'dhule' ? '3 Verified Complaints' : '2 Verified Complaints'}
+                      activePilotTerritory === 'dhule' ? '3 Verified Complaints' : '2 Verified Complaints'}
                   </strong>
                 </div>
                 <div className="flex items-center justify-between">
@@ -818,10 +811,10 @@ export default function HomePage() {
 
             <button
               onClick={() => {
-                const sample = sampleScenarios.find(s => 
+                const sample = sampleScenarios.find(s =>
                   activePilotTerritory === 'jehanabad' ? s.loc.district.toLowerCase().includes('jehanabad') :
-                  activePilotTerritory === 'dhule' ? s.loc.district.toLowerCase().includes('dhule') :
-                  s.loc.country === 'South Africa'
+                    activePilotTerritory === 'dhule' ? s.loc.district.toLowerCase().includes('dhule') :
+                      s.loc.country === 'South Africa'
                 ) || sampleScenarios[0];
                 handleApplySamplePrompt(sample);
               }}
@@ -840,7 +833,7 @@ export default function HomePage() {
       {/* ==================================================================== */}
       <section id="citizen-sandbox" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="rounded-3xl bg-white/90 backdrop-blur-xl border-2 border-orange-200 shadow-md p-6 md:p-10 space-y-8">
-          
+
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-orange-200 pb-6">
             <div className="space-y-1">
               <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-orange-100 text-orange-800 text-xs font-mono font-bold border border-orange-300">
@@ -943,10 +936,9 @@ export default function HomePage() {
               <div className="p-3.5 rounded-2xl bg-white border border-orange-200 shadow-2xs space-y-0.5">
                 <span className="text-[10px] text-stone-500 font-bold uppercase">Estimated Urgency</span>
                 <div className="flex items-center space-x-2">
-                  <span className={`px-2 py-0.5 rounded text-[11px] font-mono font-extrabold uppercase ${
-                    demoResult?.urgency === 'critical' ? 'bg-red-600 text-white' :
-                    demoResult?.urgency === 'high' ? 'bg-amber-600 text-white' : 'bg-blue-600 text-white'
-                  }`}>
+                  <span className={`px-2 py-0.5 rounded text-[11px] font-mono font-extrabold uppercase ${demoResult?.urgency === 'critical' ? 'bg-red-600 text-white' :
+                      demoResult?.urgency === 'high' ? 'bg-amber-600 text-white' : 'bg-blue-600 text-white'
+                    }`}>
                     {demoResult?.urgency || 'HIGH'}
                   </span>
                   <span className="text-[11px] font-mono text-stone-600 font-bold">
@@ -977,11 +969,10 @@ export default function HomePage() {
                 <button
                   type="submit"
                   disabled={isSubmittingSandbox}
-                  className={`px-8 py-3.5 rounded-2xl font-extrabold text-xs text-white shadow-lg transition-all flex items-center justify-center space-x-2 shrink-0 ${
-                    isSubmittingSandbox
+                  className={`px-8 py-3.5 rounded-2xl font-extrabold text-xs text-white shadow-lg transition-all flex items-center justify-center space-x-2 shrink-0 ${isSubmittingSandbox
                       ? 'bg-stone-400 cursor-not-allowed'
                       : 'bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 hover:from-orange-600 hover:to-amber-600 shadow-orange-500/30 hover:scale-[1.02] active:scale-95 cursor-pointer'
-                  }`}
+                    }`}
                 >
                   {isSubmittingSandbox ? (
                     <>
@@ -1046,11 +1037,10 @@ export default function HomePage() {
                   <span className="font-mono font-bold text-xs text-orange-700 bg-orange-50 px-2 py-0.5 rounded-md border border-orange-200">
                     {item.referenceCode}
                   </span>
-                  <span className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase ${
-                    item.urgency === 'critical' ? 'bg-red-100 text-red-800 border border-red-300' :
-                    item.urgency === 'high' ? 'bg-amber-100 text-amber-800 border border-amber-300' :
-                    'bg-blue-100 text-blue-800 border border-blue-300'
-                  }`}>
+                  <span className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase ${item.urgency === 'critical' ? 'bg-red-100 text-red-800 border border-red-300' :
+                      item.urgency === 'high' ? 'bg-amber-100 text-amber-800 border border-amber-300' :
+                        'bg-blue-100 text-blue-800 border border-blue-300'
+                    }`}>
                     {item.urgency}
                   </span>
                 </div>
@@ -1204,7 +1194,7 @@ export default function HomePage() {
       {showSmsModal && submittedSandboxRecord && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/60 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="bg-white rounded-3xl border-2 border-orange-300 shadow-2xl max-w-xl w-full p-6 sm:p-8 space-y-6 animate-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto">
-            
+
             {/* Modal Header */}
             <div className="flex items-center justify-between border-b border-stone-200 pb-4">
               <div className="flex items-center space-x-3">
@@ -1243,25 +1233,22 @@ export default function HomePage() {
             <div className="flex items-center space-x-1.5 border-b border-stone-200 pb-2 text-xs font-bold">
               <button
                 onClick={() => setSmsTab('both')}
-                className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer ${
-                  smsTab === 'both' ? 'bg-orange-500 text-white shadow-2xs' : 'bg-stone-100 text-stone-700 hover:bg-stone-200'
-                }`}
+                className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer ${smsTab === 'both' ? 'bg-orange-500 text-white shadow-2xs' : 'bg-stone-100 text-stone-700 hover:bg-stone-200'
+                  }`}
               >
                 Both Languages (दोनों भाषाएं)
               </button>
               <button
                 onClick={() => setSmsTab('hi')}
-                className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer ${
-                  smsTab === 'hi' ? 'bg-orange-500 text-white shadow-2xs' : 'bg-stone-100 text-stone-700 hover:bg-stone-200'
-                }`}
+                className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer ${smsTab === 'hi' ? 'bg-orange-500 text-white shadow-2xs' : 'bg-stone-100 text-stone-700 hover:bg-stone-200'
+                  }`}
               >
                 🇮🇳 हिन्दी SMS
               </button>
               <button
                 onClick={() => setSmsTab('en')}
-                className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer ${
-                  smsTab === 'en' ? 'bg-orange-500 text-white shadow-2xs' : 'bg-stone-100 text-stone-700 hover:bg-stone-200'
-                }`}
+                className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer ${smsTab === 'en' ? 'bg-orange-500 text-white shadow-2xs' : 'bg-stone-100 text-stone-700 hover:bg-stone-200'
+                  }`}
               >
                 🌐 English SMS
               </button>
@@ -1269,7 +1256,7 @@ export default function HomePage() {
 
             {/* SMS Message Boxes */}
             <div className="space-y-4">
-              
+
               {/* Hindi SMS Preview */}
               {(smsTab === 'both' || smsTab === 'hi') && (
                 <div className="p-4 rounded-2xl bg-stone-900 text-stone-100 font-sans text-xs space-y-3 border-2 border-stone-800 shadow-md">
@@ -1282,7 +1269,7 @@ export default function HomePage() {
                       <span>DELIVERED</span>
                     </span>
                   </div>
-                  
+
                   <div className="space-y-2 text-stone-200 leading-relaxed">
                     <div className="text-amber-300 font-bold text-xs">
                       🏛️ सरकारी नागरिक सेवा सूचना (BRICS CivicPulse)
