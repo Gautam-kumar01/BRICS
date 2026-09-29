@@ -45,13 +45,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (saved) {
         setUser(JSON.parse(saved));
       } else {
-        // Default to Central Super Admin for immediate full preview
-        const defaultUser = SEED_USERS.find(u => u.email === 'gautamkr192007@gmail.com') || SEED_USERS[0];
-        setUser(defaultUser);
-        localStorage.setItem('civicpulse_auth_user', JSON.stringify(defaultUser));
+        // By default, visitor starts unauthenticated (logged out)
+        setUser(null);
       }
     } catch (e) {
       console.error('Failed to load saved session:', e);
+      setUser(null);
     } finally {
       setIsLoading(false);
     }

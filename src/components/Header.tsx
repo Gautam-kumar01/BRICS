@@ -133,29 +133,7 @@ export default function Header() {
               })}
             </nav>
 
-            {/* Medium/Tablet Navigation (Top 4 links) */}
-            <nav className="hidden lg:flex xl:hidden items-center space-x-0.5 shrink-0">
-              {navLinks.slice(0, 4).map((link) => {
-                const Icon = link.icon;
-                const isActive = pathname === link.href;
-                return (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    className={`flex items-center space-x-1 px-1.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all duration-150 ${
-                      isActive
-                        ? 'bg-orange-50 text-orange-600 border border-orange-200'
-                        : 'text-stone-700 hover:text-orange-600 hover:bg-orange-50/50'
-                    }`}
-                  >
-                    <Icon className={`w-3.5 h-3.5 shrink-0 ${isActive ? 'text-orange-600' : 'text-stone-400'}`} />
-                    <span>{link.label}</span>
-                  </Link>
-                );
-              })}
-            </nav>
-
-            {/* Right Action Bar: Official Sign In, Language Selector, Citizen Voice */}
+            {/* Right Action Bar: Official Sign In, Language Selector, Citizen Voice, Mobile Menu */}
             <div className="flex items-center space-x-1.5 sm:space-x-2 shrink-0">
 
               {/* High-Visibility Language Selector Dropdown */}
@@ -163,7 +141,7 @@ export default function Header() {
                 <button
                   id="header-language-toggle"
                   onClick={() => setIsLangOpen(!isLangOpen)}
-                  className="flex items-center space-x-1 px-2 py-1.5 rounded-xl bg-gradient-to-r from-orange-50 to-amber-50 border-2 border-orange-300 hover:border-orange-500 text-xs text-stone-900 font-bold transition-all shadow-2xs whitespace-nowrap active:scale-95"
+                  className="flex items-center space-x-1 px-2 py-1 rounded-xl bg-gradient-to-r from-orange-50 to-amber-50 border-2 border-orange-300 hover:border-orange-500 text-xs text-stone-900 font-bold transition-all shadow-2xs whitespace-nowrap active:scale-95"
                   title="Choose Language"
                 >
                   <Languages className="w-3.5 h-3.5 text-orange-600 shrink-0" />
@@ -214,18 +192,18 @@ export default function Header() {
                   <button
                     type="button"
                     onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
-                    className="flex items-center space-x-1.5 bg-orange-50/90 hover:bg-orange-100/90 px-2 sm:px-2.5 py-1 rounded-xl border-2 border-orange-300 hover:border-orange-500 shadow-2xs transition-all whitespace-nowrap cursor-pointer text-left shrink-0"
+                    className="flex items-center space-x-1.5 bg-orange-50 hover:bg-orange-100 px-2 py-1 rounded-xl border-2 border-orange-300 hover:border-orange-500 shadow-2xs transition-all whitespace-nowrap cursor-pointer text-left shrink-0"
                     title="Click to open Authority Dashboard & Profile"
                   >
-                    <div className="w-6 h-6 rounded-lg bg-orange-600 text-white flex items-center justify-center font-mono font-bold text-xs shrink-0">
+                    <div className="w-5 h-5 rounded-lg bg-orange-600 text-white flex items-center justify-center font-mono font-bold text-[10px] shrink-0">
                       {user.name.charAt(0)}
                     </div>
                     <div className="flex flex-col text-left overflow-hidden">
-                      <span className="text-[10px] sm:text-[11px] font-extrabold text-stone-900 leading-none truncate max-w-[65px] sm:max-w-[90px] 2xl:max-w-[120px]">
+                      <span className="text-[10px] font-extrabold text-stone-900 leading-none truncate max-w-[55px] xl:max-w-[70px] 2xl:max-w-[100px]">
                         {user.name}
                       </span>
-                      <span className="text-[8px] sm:text-[9px] font-mono text-orange-700 uppercase leading-none mt-0.5 font-bold truncate max-w-[65px] sm:max-w-[90px] 2xl:max-w-[120px]">
-                        {user.role.replace('_', ' ')}
+                      <span className="text-[8px] font-mono text-orange-700 uppercase leading-none mt-0.5 font-bold truncate max-w-[55px] xl:max-w-[70px] 2xl:max-w-[100px]">
+                        {user.role === 'super_admin' ? 'Admin' : user.role === 'district_collector' ? 'Collector' : 'Officer'}
                       </span>
                     </div>
                     <ChevronDown className={`w-3 h-3 text-orange-700 shrink-0 transition-transform ${isProfileDropdownOpen ? 'rotate-180' : ''}`} />
@@ -363,11 +341,12 @@ export default function Header() {
                 <span className="inline">{t('hero.voice_report_btn')}</span>
               </Link>
 
-              {/* Mobile Menu Drawer Toggle */}
+              {/* Mobile Menu Drawer Toggle Button */}
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="lg:hidden p-2 rounded-xl bg-white border border-stone-200 text-stone-700 hover:text-orange-600 shadow-2xs"
+                className="xl:hidden p-1.5 sm:p-2 rounded-xl bg-white border border-stone-200 text-stone-700 hover:text-orange-600 shadow-2xs shrink-0"
                 title="Open Menu"
+                aria-label="Toggle navigation menu"
               >
                 {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
               </button>
@@ -379,9 +358,46 @@ export default function Header() {
 
         {/* Mobile Navigation Drawer */}
         {isMobileMenuOpen && (
-          <div className="lg:hidden border-t border-stone-200 bg-white/98 backdrop-blur-2xl px-4 py-4 space-y-3 shadow-xl">
+          <div className="xl:hidden border-t border-stone-200 bg-white/98 backdrop-blur-2xl px-4 py-4 space-y-3 shadow-xl max-h-[85vh] overflow-y-auto">
+            
+            {/* Mobile Official Authority / Citizen Auth Status */}
+            {user ? (
+              <div className="p-3 bg-orange-50 rounded-2xl border border-orange-200 flex items-center justify-between">
+                <div className="flex items-center space-x-2.5">
+                  <div className="w-8 h-8 rounded-xl bg-orange-600 text-white flex items-center justify-center font-bold text-xs">
+                    {user.name.charAt(0)}
+                  </div>
+                  <div>
+                    <div className="text-xs font-extrabold text-stone-900">{user.name}</div>
+                    <div className="text-[10px] font-mono text-orange-700 uppercase font-bold">{user.role.replace('_', ' ')}</div>
+                  </div>
+                </div>
+                <button
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    logout();
+                  }}
+                  className="px-2.5 py-1 rounded-lg bg-red-50 text-red-700 text-xs font-bold border border-red-200"
+                >
+                  Sign Out
+                </button>
+              </div>
+            ) : (
+              <div className="p-3 bg-stone-50 rounded-2xl border border-stone-200 flex items-center justify-between">
+                <span className="text-xs text-stone-600 font-medium">Public Citizen Mode</span>
+                <Link
+                  href="/login"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="px-3 py-1.5 rounded-xl bg-orange-600 text-white text-xs font-bold flex items-center space-x-1"
+                >
+                  <User className="w-3.5 h-3.5" />
+                  <span>Authority Login</span>
+                </Link>
+              </div>
+            )}
+
             {/* Mobile Language Pill Selector */}
-            <div className="p-3 bg-orange-50/80 rounded-2xl border border-orange-200">
+            <div className="p-3 bg-stone-50 rounded-2xl border border-stone-200">
               <div className="text-[10px] font-mono font-bold text-orange-900 uppercase tracking-wider mb-2">
                 🌐 Select Language / भाषा चुनें
               </div>
