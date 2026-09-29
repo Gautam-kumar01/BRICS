@@ -12,7 +12,8 @@ import {
   X,
   Lock,
   Eye,
-  Scale
+  Scale,
+  Database
 } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 
@@ -119,13 +120,18 @@ export default function Footer() {
             <div className="flex flex-wrap items-center gap-2 text-xs font-bold">
               <span className="px-3 py-1 rounded-full bg-emerald-950/80 text-emerald-300 border border-emerald-700/80 font-mono text-[11px] flex items-center space-x-1.5 shadow-2xs font-extrabold">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                <span>DPG Standard Verified</span>
+                <span>Designed as a Digital Public Good</span>
               </span>
-              <span className="px-3 py-1 rounded-full bg-orange-950/80 text-orange-300 border border-orange-700/80 font-mono text-[11px] shadow-2xs font-extrabold">
-                Open-Source GovTech
-              </span>
+              <a 
+                href="https://github.com/Gautam-kumar01/BRICS" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="px-3 py-1 rounded-full bg-orange-950/80 text-orange-300 border border-orange-700/80 font-mono text-[11px] shadow-2xs font-extrabold hover:bg-orange-900 transition-colors"
+              >
+                Open Architecture ↗
+              </a>
               <span className="px-3 py-1 rounded-full bg-[#422517] text-[#F3E8DF] border border-[#5C3623] font-mono text-[11px] font-extrabold">
-                WCAG 2.2 AA
+                Accessibility Target: WCAG 2.2 AA
               </span>
             </div>
           </div>
@@ -153,19 +159,22 @@ export default function Footer() {
                 A scalable, multilingual AI platform aggregating citizen development requests across voice, text, and messaging to surface demand hotspots and recommend high-priority public projects to national policymakers across BRICS nations.
               </p>
 
-              {/* Member Nations Coverage */}
+              {/* 11 Member Nations Coverage */}
               <div className="pt-2">
                 <span className="text-[10px] font-mono font-extrabold uppercase tracking-wider text-orange-300 block mb-2">
-                  {t('footer.member_nations')}
+                  11 BRICS Member States
                 </span>
                 <div className="flex flex-wrap gap-1.5 text-xs">
-                  <span className="px-2.5 py-1 rounded-lg bg-[#3D2115] border border-[#593321] text-[#F3E8DF] font-bold shadow-2xs">🇿🇦 South Africa</span>
                   <span className="px-2.5 py-1 rounded-lg bg-[#3D2115] border border-[#593321] text-[#F3E8DF] font-bold shadow-2xs">🇮🇳 India</span>
                   <span className="px-2.5 py-1 rounded-lg bg-[#3D2115] border border-[#593321] text-[#F3E8DF] font-bold shadow-2xs">🇧🇷 Brazil</span>
+                  <span className="px-2.5 py-1 rounded-lg bg-[#3D2115] border border-[#593321] text-[#F3E8DF] font-bold shadow-2xs">🇿🇦 South Africa</span>
                   <span className="px-2.5 py-1 rounded-lg bg-[#3D2115] border border-[#593321] text-[#F3E8DF] font-bold shadow-2xs">🇷🇺 Russia</span>
                   <span className="px-2.5 py-1 rounded-lg bg-[#3D2115] border border-[#593321] text-[#F3E8DF] font-bold shadow-2xs">🇨🇳 China</span>
                   <span className="px-2.5 py-1 rounded-lg bg-[#3D2115] border border-[#593321] text-[#F3E8DF] font-bold shadow-2xs">🇪🇬 Egypt</span>
                   <span className="px-2.5 py-1 rounded-lg bg-[#3D2115] border border-[#593321] text-[#F3E8DF] font-bold shadow-2xs">🇪🇹 Ethiopia</span>
+                  <span className="px-2.5 py-1 rounded-lg bg-[#3D2115] border border-[#593321] text-[#F3E8DF] font-bold shadow-2xs">🇮🇩 Indonesia</span>
+                  <span className="px-2.5 py-1 rounded-lg bg-[#3D2115] border border-[#593321] text-[#F3E8DF] font-bold shadow-2xs">🇮🇷 Iran</span>
+                  <span className="px-2.5 py-1 rounded-lg bg-[#3D2115] border border-[#593321] text-[#F3E8DF] font-bold shadow-2xs">🇸🇦 Saudi Arabia</span>
                   <span className="px-2.5 py-1 rounded-lg bg-[#3D2115] border border-[#593321] text-[#F3E8DF] font-bold shadow-2xs">🇦🇪 UAE</span>
                 </div>
               </div>
@@ -181,6 +190,12 @@ export default function Footer() {
                   <Link href="/citizen" className="hover:text-orange-300 transition-colors flex items-center space-x-1.5">
                     <Compass className="w-3.5 h-3.5 text-orange-400" />
                     <span>Citizen Voice & Demand</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/data" className="hover:text-orange-300 transition-colors flex items-center space-x-1.5">
+                    <Database className="w-3.5 h-3.5 text-orange-400" />
+                    <span>Data Intelligence & Fusion</span>
                   </Link>
                 </li>
                 <li>

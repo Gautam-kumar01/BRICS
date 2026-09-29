@@ -1,5 +1,5 @@
 // ============================================================================
-// BRICS CivicPulse - Type Definitions (Aligned with PRD v1.0 MVP)
+// BRICS CivicPulse - Type Definitions (Aligned with PRD v1.0 MVP & Hack2Skills)
 // ============================================================================
 
 export type InfrastructureDomain = 'water' | 'roads' | 'connectivity' | 'energy' | 'sanitation' | 'health';
@@ -14,12 +14,49 @@ export type SubmissionStatus =
   | 'in_review' 
   | 'approved' 
   | 'in_progress' 
-  | 'resolved'
+  | 'resolved' 
   | 'rejected';
 
 export type UrgencyLevel = 'low' | 'medium' | 'high' | 'critical';
 
 export type SupportedLanguage = 'en' | 'hi' | 'pt' | 'ru' | 'zh' | 'ar' | 'sw';
+
+export type DataStatusType = 'measured' | 'projected' | 'simulated' | 'not_available';
+
+export type DataAvailabilityState = 'available' | 'partial' | 'not_available' | 'simulated';
+
+export interface DataProvenanceInfo {
+  datasetName: string;
+  source: string;
+  year: number;
+  geography: string;
+  lastUpdated: string;
+  dataType: string;
+  status: DataStatusType;
+  methodologyUrl?: string;
+  confidenceScore?: number;
+  sampleCount?: number;
+}
+
+export interface BRICSCountryConfig {
+  code: string;
+  name: string;
+  nativeName: string;
+  flag: string;
+  language: SupportedLanguage;
+  currency: string;
+  currencySymbol: string;
+  administrativeLevels: {
+    national: string;
+    stateOrProvince: string;
+    district: string;
+    subDistrict: string;
+  };
+  datasetsAvailable: boolean;
+  activePilots: string[];
+  infrastructureIndicators: string[];
+  dataAvailability: DataAvailabilityState;
+}
 
 export interface LocationGeo {
   latitude: number;
@@ -77,6 +114,8 @@ export interface CitizenSubmission {
   };
   aiProviderUsed?: string;
   updatedAt: string;
+  provenance?: DataProvenanceInfo;
+  dataStatus?: DataStatusType;
 }
 
 export interface DemandCluster {
@@ -102,6 +141,8 @@ export interface DemandCluster {
   status: 'active' | 'investigating' | 'promoted_to_project' | 'closed';
   summaryRationale: string;
   aiSuggestedIntervention: string;
+  provenance?: DataProvenanceInfo;
+  dataStatus?: DataStatusType;
 }
 
 export interface InfrastructureIndicator {
@@ -118,6 +159,8 @@ export interface InfrastructureIndicator {
   sourceDataset: string;
   dataFreshnessDate: string;
   qualityRating: 'verified_official' | 'satellite_modelled' | 'provisional';
+  provenance?: DataProvenanceInfo;
+  dataStatus?: DataStatusType;
 }
 
 export interface PrioritizationWeights {
@@ -157,6 +200,8 @@ export interface CandidateRecommendation {
   approvedStatus: 'pending_review' | 'included_in_plan' | 'deferred' | 'rejected';
   decisionRationale?: string;
   decidedByOfficer?: string;
+  provenance?: DataProvenanceInfo;
+  dataStatus?: DataStatusType;
 }
 
 export interface PolicyScenario {
@@ -172,6 +217,7 @@ export interface PolicyScenario {
   equityCoverageScore: number;
   unresolvedDemandCount: number;
   createdAt: string;
+  dataStatus?: DataStatusType;
 }
 
 export interface ProjectRegistryItem {
@@ -194,14 +240,16 @@ export interface ProjectRegistryItem {
     completedDate?: string;
     status: 'completed' | 'in_progress' | 'delayed' | 'pending';
   }>;
-  baselineMetric: { name: string; value: string };
-  targetMetric: { name: string; value: string };
-  currentMetric: { name: string; value: string };
+  baselineMetric: { name: string; value: string; status?: DataStatusType };
+  targetMetric: { name: string; value: string; status?: DataStatusType };
+  currentMetric: { name: string; value: string; status?: DataStatusType };
   citizenSatisfactionAverage: number; // 1 - 5
   totalCitizenReviews: number;
   liveStatus: 'planning' | 'procurement' | 'construction' | 'commissioned' | 'delivered';
   lastStatusUpdate: string;
   publicEvidenceUrl?: string;
+  provenance?: DataProvenanceInfo;
+  dataStatus?: DataStatusType;
 }
 
 export interface AIProviderStatus {
@@ -245,6 +293,7 @@ export interface AuditLogItem {
   details: string;
   previousValue?: string;
   newValue?: string;
+  decisionStatus?: 'pending_human_review' | 'approved_by_officer' | 'rejected_by_officer' | 'evidence_requested';
 }
 
 export type UserRole = 
@@ -277,4 +326,5 @@ export interface UserProfile {
   lastLoginAt?: string;
   permissions: string[];
 }
+
 

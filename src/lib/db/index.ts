@@ -51,7 +51,9 @@ if (!globalStore.users || globalStore.users.length === 0) {
     if (!existing) {
       globalStore.users.push(su);
     } else {
-      // Ensure passwordHash and district are up to date
+      existing.name = su.name;
+      existing.agency = su.agency;
+      existing.badge = su.badge;
       existing.passwordHash = su.passwordHash;
       existing.role = su.role;
       existing.assignedDistrict = su.assignedDistrict;

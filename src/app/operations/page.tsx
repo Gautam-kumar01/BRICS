@@ -23,9 +23,12 @@ import {
   Eye, 
   Check 
 } from 'lucide-react';
-import { CitizenSubmission, InfrastructureDomain, SubmissionStatus, UrgencyLevel } from '@/types';
+import { CitizenSubmission, InfrastructureDomain, SubmissionStatus, UrgencyLevel, DataProvenanceInfo } from '@/types';
 import { SEED_SUBMISSIONS, SEED_CLUSTERS } from '@/data/seed-data';
 import { useAuth } from '@/context/AuthContext';
+import PrototypeDisclosure from '@/components/PrototypeDisclosure';
+import DataStatusBadge from '@/components/DataStatusBadge';
+import DataProvenanceModal from '@/components/DataProvenanceModal';
 
 export default function OperationsPage() {
   const { user, isSuperAdmin, isDistrictCollector, isDepartmentEngineer, assignedDistrict, assignedDepartment: userAssignedDepartment } = useAuth();
@@ -39,6 +42,7 @@ export default function OperationsPage() {
   const [filterDistrictOverride, setFilterDistrictOverride] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(false);
+  const [provenanceModalOpen, setProvenanceModalOpen] = useState(false);
 
   // Editable fields for human correction
   const [editedCategory, setEditedCategory] = useState<InfrastructureDomain>('water');
@@ -187,6 +191,9 @@ export default function OperationsPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6 text-stone-900">
       
+      {/* Prototype Environment Notice */}
+      <PrototypeDisclosure variant="banner" />
+
       {/* Page Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-stone-200 pb-4">
         <div>
@@ -414,11 +421,23 @@ export default function OperationsPage() {
                   </p>
                 </div>
 
-                <div className="flex items-center space-x-2">
-                  <span className="text-xs text-stone-500">Status:</span>
-                  <span className="text-xs font-mono font-extrabold px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 uppercase">
-                    {selectedSub.status}
-                  </span>
+                <div className="flex flex-wrap items-center gap-2">
+                  <DataStatusBadge status={selectedSub.dataProvenance?.status || 'simulated'} size="sm" />
+                  
+                  <button
+                    onClick={() => setProvenanceModalOpen(true)}
+                    className="flex items-center space-x-1 px-2.5 py-1 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-semibold border border-stone-200 transition-colors"
+                  >
+                    <Sparkles className="w-3 h-3 text-orange-600" />
+                    <span>Provenance</span>
+                  </button>
+
+                  <div className="flex items-center space-x-1.5 ml-2">
+                    <span className="text-xs text-stone-500">Status:</span>
+                    <span className="text-xs font-mono font-extrabold px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 uppercase">
+                      {selectedSub.status}
+                    </span>
+                  </div>
                 </div>
               </div>
 
@@ -628,6 +647,27 @@ export default function OperationsPage() {
         </div>
 
       </div>
+
+      {/* Data Provenance Modal */}
+      {selectedSub && (
+        <DataProvenanceModal
+          isOpen={provenanceModalOpen}
+          onClose={() => setProvenanceModalOpen(false)}
+          metricName={`Citizen Submission #${selectedSub.referenceCode} (${selectedSub.category.toUpperCase()})`}
+          metricValue={selectedSub.urgency.toUpperCase()}
+          provenance={selectedSub.dataProvenance || {
+            datasetName: 'CivicPulse Multi-Channel Ingestion Stream',
+            source: 'Citizen Intake Gateway (Voice, Text, Web Portal)',
+            year: 2026,
+            geography: `${selectedSub.location.district}, ${selectedSub.location.country}`,
+            lastUpdated: selectedSub.timestamp ? new Date(selectedSub.timestamp).toISOString().split('T')[0] : '2026-09-29',
+            dataType: 'Citizen Request Record',
+            status: 'simulated',
+            confidenceScore: selectedSub.aiConfidenceScore || 0.94,
+            methodologyUrl: 'https://github.com/Gautam-kumar01/BRICS#multichannel-intake'
+          }}
+        />
+      )}
 
     </div>
   );

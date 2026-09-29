@@ -36,6 +36,8 @@ import {
 import { AuditLogItem, AIProviderStatus, UserProfile, UserRole } from '@/types';
 import { SEED_AUDIT_LOGS, SEED_USERS } from '@/data/seed-data';
 import { useAuth } from '@/context/AuthContext';
+import PrototypeDisclosure from '@/components/PrototypeDisclosure';
+import DataStatusBadge from '@/components/DataStatusBadge';
 
 export default function GovernancePage() {
   const { user: currentUser, isSuperAdmin } = useAuth();
@@ -68,14 +70,14 @@ export default function GovernancePage() {
     name: '',
     email: '',
     role: 'district_collector' as UserRole,
-    agency: 'Office of the District Magistrate & Collector',
+    agency: 'Office of the District Authority & Administration',
     assignedCountry: 'India',
     stateOrProvince: 'Bihar',
     assignedDistrict: 'Jehanabad',
     assignedPincodes: '804408, 804417',
-    assignedDepartment: 'District Administration & Disaster Management',
+    assignedDepartment: 'District Administration & Public Works',
     allocatedBudgetUsd: 1800000,
-    badge: 'Jehanabad District Magistrate'
+    badge: 'Demo District Authority (Jehanabad)'
   });
 
   useEffect(() => {
@@ -238,6 +240,9 @@ export default function GovernancePage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 text-stone-900">
       
+      {/* Prototype Environment Notice */}
+      <PrototypeDisclosure variant="banner" />
+
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-stone-200 pb-6">
         <div>
@@ -368,12 +373,12 @@ export default function GovernancePage() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2 text-xs text-stone-300 border-t border-orange-500/20">
               <div className="p-3.5 rounded-2xl bg-black/40 border border-orange-500/30 space-y-1">
-                <strong className="text-orange-300 block font-bold">🏛️ Central Super Admin (Gautam Kumar):</strong>
+                <strong className="text-orange-300 block font-bold">🏛️ Central Super Admin (Demo):</strong>
                 <p className="text-stone-300 text-[11px]">Omniscient multi-district visibility, official provisioning, and multi-million USD capital budget allocation.</p>
               </div>
               <div className="p-3.5 rounded-2xl bg-black/40 border border-orange-500/30 space-y-1">
-                <strong className="text-amber-300 block font-bold">🏢 District Magistrates (Jehanabad / Dhule):</strong>
-                <p className="text-stone-300 text-[11px]">Strict territory scoping. When Jehanabad DM logs in, only Jehanabad complaints and demands are accessible.</p>
+                <strong className="text-amber-300 block font-bold">🏢 District Authorities (Demo Jehanabad / Dhule):</strong>
+                <p className="text-stone-300 text-[11px]">Strict territory scoping. When Jehanabad Authority logs in, only Jehanabad complaints and demands are accessible.</p>
               </div>
               <div className="p-3.5 rounded-2xl bg-black/40 border border-orange-500/30 space-y-1">
                 <strong className="text-emerald-300 block font-bold">✉️ Invitation-Driven Account Activation:</strong>
@@ -383,7 +388,7 @@ export default function GovernancePage() {
 
             <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
               <div className="text-xs text-stone-400">
-                Authenticated Lead: <strong className="text-white">{currentUser?.name || 'Gautam Kumar (IAS)'}</strong> ({currentUser?.role || 'super_admin'}) • {currentUser?.email}
+                Authenticated Lead: <strong className="text-white">{currentUser?.name || 'Demo Super Administrator'}</strong> ({currentUser?.role || 'super_admin'}) • {currentUser?.email}
               </div>
               {isSuperAdmin ? (
                 <button
@@ -641,7 +646,7 @@ export default function GovernancePage() {
                     <p>Dear <strong>{dispatchedInvite.user.name}</strong>,</p>
                     
                     <p>
-                      You have been formally provisioned on the <strong>BRICS CivicPulse Sovereign Governance & Infrastructure Platform</strong> by Central Super Administrator Gautam Kumar.
+                      You have been provisioned in this prototype environment on the <strong>BRICS CivicPulse Sovereign Governance & Infrastructure Platform</strong> by Demo Super Administrator.
                     </p>
 
                     <div className="p-3.5 rounded-xl bg-white border border-stone-200 space-y-1.5 font-mono text-[11px]">
@@ -817,7 +822,7 @@ export default function GovernancePage() {
                       type="text"
                       value={newUserData.name}
                       onChange={(e) => setNewUserData({ ...newUserData, name: e.target.value })}
-                      placeholder="e.g. Shri Alok Ranjan (IAS)"
+                      placeholder="e.g. Demo District Authority (Jehanabad)"
                       className="w-full px-3.5 py-2.5 rounded-xl border border-stone-200 focus:outline-hidden focus:border-orange-500 font-medium"
                       required
                     />
@@ -1233,11 +1238,11 @@ export default function GovernancePage() {
               {[
                 { label: 'Pilot geography, categories (Water, Roads, Connectivity) approved', checked: true },
                 { label: 'Data sources have owners, licenses, refresh rules and quality ratings', checked: true },
-                { label: 'Citizen consent & DPG Section 8 privacy notices active locally', checked: true },
-                { label: 'Government roles, access scopes and MFA configured', checked: true },
+                { label: 'Designed as a Digital Public Good with Section 8 privacy notices active', checked: true },
+                { label: 'Government roles, access scopes and territory RBAC configured', checked: true },
                 { label: 'Human review queue staffed and escalation policy tested', checked: true },
                 { label: 'AI evaluation passed across 7 BRICS languages & channels', checked: true },
-                { label: 'WCAG 2.2 AA accessibility completed for critical citizen flows', checked: true },
+                { label: 'Accessibility Target: WCAG 2.2 AA compliant for citizen flows', checked: true },
                 { label: 'Threat model, rate limiting & session protection verified', checked: true },
                 { label: 'Incident, support and rollback runbooks published', checked: true },
                 { label: 'Baseline metrics and measurement owners confirmed in registry', checked: true }

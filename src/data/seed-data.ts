@@ -12,7 +12,9 @@ import {
   ProjectRegistryItem,
   AuditLogItem,
   PolicyScenario,
-  UserProfile
+  UserProfile,
+  BRICSCountryConfig,
+  DataProvenanceInfo
 } from '@/types';
 
 export const SEED_SUBMISSIONS: CitizenSubmission[] = [
@@ -742,8 +744,8 @@ export const SEED_RECOMMENDATIONS: CandidateRecommendation[] = [
     ],
     equityNotes: 'Restores continuous safe tap water to 600+ families and Kako Primary Health Centre.',
     approvedStatus: 'included_in_plan',
-    decisionRationale: 'Top ranking priority approved by District Magistrate Jehanabad for Immediate Relief.',
-    decidedByOfficer: 'Shri Alok Ranjan (IAS), District Magistrate Jehanabad'
+    decisionRationale: 'Top ranking priority approved by District Authority Jehanabad for Immediate Relief.',
+    decidedByOfficer: 'Demo District Authority (Jehanabad)'
   },
   {
     id: 'rec-jhn-02',
@@ -777,7 +779,7 @@ export const SEED_RECOMMENDATIONS: CandidateRecommendation[] = [
     equityNotes: 'Re-establishes direct mandi and emergency ambulance transit for 4 rural panchayat villages.',
     approvedStatus: 'included_in_plan',
     decisionRationale: 'Approved under State Rural Connectivity Disaster Resilience Grant.',
-    decidedByOfficer: 'Shri Alok Ranjan (IAS), District Magistrate Jehanabad'
+    decidedByOfficer: 'Demo District Authority (Jehanabad)'
   },
   {
     id: 'rec-01',
@@ -1072,7 +1074,7 @@ export const SEED_AUDIT_LOGS: AuditLogItem[] = [
 export const SEED_USERS: UserProfile[] = [
   {
     id: 'user-super-admin-gautam',
-    name: 'Gautam Kumar (IAS)',
+    name: 'Demo Super Administrator',
     email: 'gautamkr192007@gmail.com',
     passwordHash: 'Gautam@9090',
     role: 'super_admin',
@@ -1087,16 +1089,16 @@ export const SEED_USERS: UserProfile[] = [
   },
   {
     id: 'user-collector-jehanabad',
-    name: 'Shri Alok Ranjan (IAS)',
+    name: 'Demo District Authority (Jehanabad)',
     email: 'dm.jehanabad@bihar.gov.in',
     passwordHash: 'Jehanabad@2026',
     role: 'district_collector',
-    agency: 'Office of the District Magistrate & Collector, Jehanabad',
+    agency: 'Office of the District Authority & Planning Directorate, Jehanabad',
     assignedCountry: 'India',
     stateOrProvince: 'Bihar',
     assignedDistrict: 'Jehanabad',
     assignedPincodes: ['804408', '804417', '804432'],
-    badge: 'Jehanabad District Magistrate',
+    badge: 'Jehanabad District Authority',
     isActive: true,
     isPasswordSet: true,
     allocatedBudgetUsd: 1800000,
@@ -1104,16 +1106,16 @@ export const SEED_USERS: UserProfile[] = [
   },
   {
     id: 'user-collector-dhule',
-    name: 'Dr. Vivek Deshmukh (IAS)',
+    name: 'Demo District Authority (Dhule)',
     email: 'collector.dhule@gov.in',
     passwordHash: 'Dhule@2026',
     role: 'district_collector',
-    agency: 'Office of the District Magistrate & Collector, Dhule',
+    agency: 'Office of the District Authority, Dhule',
     assignedCountry: 'India',
     stateOrProvince: 'Maharashtra',
     assignedDistrict: 'Dhule (Dhulia)',
     assignedPincodes: ['424001', '424002', '424004', '424304'],
-    badge: 'Dhule District Magistrate',
+    badge: 'Dhule District Authority',
     isActive: true,
     isPasswordSet: true,
     allocatedBudgetUsd: 2200000,
@@ -1121,7 +1123,7 @@ export const SEED_USERS: UserProfile[] = [
   },
   {
     id: 'user-collector-tshwane',
-    name: 'Dr. Thabo Mokoena',
+    name: 'Demo Municipal Authority (Tshwane)',
     email: 'collector.tshwane@gov.za',
     passwordHash: 'Tshwane@2026',
     role: 'district_collector',
@@ -1130,7 +1132,7 @@ export const SEED_USERS: UserProfile[] = [
     stateOrProvince: 'Gauteng',
     assignedDistrict: 'City of Tshwane (Gauteng)',
     assignedPincodes: ['0152', '0001', '0002'],
-    badge: 'Tshwane Municipal Chief',
+    badge: 'Tshwane Municipal Authority',
     isActive: true,
     isPasswordSet: true,
     allocatedBudgetUsd: 3500000,
@@ -1138,7 +1140,7 @@ export const SEED_USERS: UserProfile[] = [
   },
   {
     id: 'user-engineer-recife',
-    name: 'Eng. Maria Santos',
+    name: 'Demo Infrastructure Officer (Recife)',
     email: 'engineer.recife@gov.br',
     passwordHash: 'Recife@2026',
     role: 'department_engineer',
@@ -1155,11 +1157,11 @@ export const SEED_USERS: UserProfile[] = [
   },
   {
     id: 'user-engineer-water-dhule',
-    name: 'Er. Sandeep Patil',
+    name: 'Demo Municipal Engineer (Dhule)',
     email: 'water.dhule@gov.in',
     passwordHash: 'Water@2026',
     role: 'department_engineer',
-    agency: 'Maharashtra Jal Pradhikaran (Water Supply Division)',
+    agency: 'State Water Supply Division',
     assignedCountry: 'India',
     stateOrProvince: 'Maharashtra',
     assignedDistrict: 'Dhule (Dhulia)',
@@ -1169,6 +1171,275 @@ export const SEED_USERS: UserProfile[] = [
     isPasswordSet: true,
     allocatedBudgetUsd: 950000,
     permissions: ['view_work_orders', 'update_repair_status', 'upload_evidence']
+  }
+];
+
+// 11 BRICS Member States Configuration Architecture
+export const BRICS_COUNTRIES_CONFIG: BRICSCountryConfig[] = [
+  {
+    code: 'IN',
+    name: 'India',
+    nativeName: 'भारत',
+    flag: '🇮🇳',
+    language: 'hi',
+    currency: 'INR',
+    currencySymbol: '₹',
+    administrativeLevels: {
+      national: 'National Union',
+      stateOrProvince: 'State (e.g. Bihar, Maharashtra)',
+      district: 'District (e.g. Jehanabad, Dhule)',
+      subDistrict: 'Block / Taluk / Panchayat'
+    },
+    datasetsAvailable: true,
+    activePilots: ['Jehanabad (Bihar)', 'Dhule (Maharashtra)'],
+    infrastructureIndicators: ['Drinking Water Pipe Network', 'Rural Roads & Culverts', 'Broadband / Digital Telecom'],
+    dataAvailability: 'available'
+  },
+  {
+    code: 'BR',
+    name: 'Brazil',
+    nativeName: 'Brasil',
+    flag: '🇧🇷',
+    language: 'pt',
+    currency: 'BRL',
+    currencySymbol: 'R$',
+    administrativeLevels: {
+      national: 'Governo Federal',
+      stateOrProvince: 'Estado (e.g. Pernambuco)',
+      district: 'Região Metropolitana (e.g. Recife)',
+      subDistrict: 'Município / Bairro'
+    },
+    datasetsAvailable: true,
+    activePilots: ['Recife Metropolitan Area (Pernambuco)'],
+    infrastructureIndicators: ['Drainage & Flood Containment', 'Transit Bridges & Corridors', 'Clean Water Access'],
+    dataAvailability: 'available'
+  },
+  {
+    code: 'ZA',
+    name: 'South Africa',
+    nativeName: 'South Africa',
+    flag: '🇿🇦',
+    language: 'en',
+    currency: 'ZAR',
+    currencySymbol: 'R',
+    administrativeLevels: {
+      national: 'National Government',
+      stateOrProvince: 'Province (e.g. Gauteng)',
+      district: 'Metropolitan Municipality (e.g. Tshwane)',
+      subDistrict: 'Ward / Suburb'
+    },
+    datasetsAvailable: true,
+    activePilots: ['City of Tshwane (Gauteng)'],
+    infrastructureIndicators: ['Municipal Water Reservoirs', 'Substation & Grid Power', 'Stormwater Drainage'],
+    dataAvailability: 'available'
+  },
+  {
+    code: 'RU',
+    name: 'Russia',
+    nativeName: 'Россия',
+    flag: '🇷🇺',
+    language: 'ru',
+    currency: 'RUB',
+    currencySymbol: '₽',
+    administrativeLevels: {
+      national: 'Федеральный центр',
+      stateOrProvince: 'Субъект РФ / Область',
+      district: 'Городской округ / Район',
+      subDistrict: 'Муниципальный округ'
+    },
+    datasetsAvailable: true,
+    activePilots: ['Kazan / Tatarstan Pilot Node'],
+    infrastructureIndicators: ['District Heating & Thermal Pipes', 'Sub-Zero Road Resilience', 'Fiber Optical Network'],
+    dataAvailability: 'partial'
+  },
+  {
+    code: 'CN',
+    name: 'China',
+    nativeName: '中国',
+    flag: '🇨🇳',
+    language: 'zh',
+    currency: 'CNY',
+    currencySymbol: '¥',
+    administrativeLevels: {
+      national: '国家级',
+      stateOrProvince: '省 / 直辖市',
+      district: '地级市 / 区',
+      subDistrict: '街道 / 乡镇'
+    },
+    datasetsAvailable: true,
+    activePilots: ['Chengdu-Chongqing Urban Cluster'],
+    infrastructureIndicators: ['Smart Water Treatment', 'High-Speed Transport Nodes', 'Rural 5G Coverage'],
+    dataAvailability: 'partial'
+  },
+  {
+    code: 'EG',
+    name: 'Egypt',
+    nativeName: 'مصر',
+    flag: '🇪🇬',
+    language: 'ar',
+    currency: 'EGP',
+    currencySymbol: 'E£',
+    administrativeLevels: {
+      national: 'الحكومة المركزية',
+      stateOrProvince: 'محافظة',
+      district: 'مركز / مدينة',
+      subDistrict: 'حي / قرية'
+    },
+    datasetsAvailable: false,
+    activePilots: ['Delta Regional Pilot Node'],
+    infrastructureIndicators: ['Nile Canal Irrigation & Piped Water', 'Rural Electrification', 'Expressway Transit'],
+    dataAvailability: 'simulated'
+  },
+  {
+    code: 'ET',
+    name: 'Ethiopia',
+    nativeName: 'ኢትዮጵያ',
+    flag: '🇪🇹',
+    language: 'en',
+    currency: 'ETB',
+    currencySymbol: 'Br',
+    administrativeLevels: {
+      national: 'Federal Government',
+      stateOrProvince: 'Region / Kilil',
+      district: 'Zone / Woreda',
+      subDistrict: 'Kebele'
+    },
+    datasetsAvailable: false,
+    activePilots: ['Addis Ababa Peripheral Corridor'],
+    infrastructureIndicators: ['Potable Water Boreholes', 'Solar Mini-Grids', 'Feeder Access Roads'],
+    dataAvailability: 'simulated'
+  },
+  {
+    code: 'ID',
+    name: 'Indonesia',
+    nativeName: 'Indonesia',
+    flag: '🇮🇩',
+    language: 'en',
+    currency: 'IDR',
+    currencySymbol: 'Rp',
+    administrativeLevels: {
+      national: 'Pemerintah Pusat',
+      stateOrProvince: 'Provinsi',
+      district: 'Kabupaten / Kota',
+      subDistrict: 'Kecamatan / Kelurahan'
+    },
+    datasetsAvailable: false,
+    activePilots: ['Nusantara Smart Civic Corridor'],
+    infrastructureIndicators: ['Clean Water Distribution', 'Coastal Flood Mitigation', 'Digital Connectivity'],
+    dataAvailability: 'not_available'
+  },
+  {
+    code: 'IR',
+    name: 'Iran',
+    nativeName: 'ایران',
+    flag: '🇮🇷',
+    language: 'ar',
+    currency: 'IRR',
+    currencySymbol: '﷼',
+    administrativeLevels: {
+      national: 'حکومت مرکزی',
+      stateOrProvince: 'استان',
+      district: 'شهرستان',
+      subDistrict: 'بخش / دهستان'
+    },
+    datasetsAvailable: false,
+    activePilots: ['Isfahan Water Conservation Node'],
+    infrastructureIndicators: ['Aquifer Management & Distribution', 'Renewable Solar Grids', 'Intercity Transit'],
+    dataAvailability: 'not_available'
+  },
+  {
+    code: 'SA',
+    name: 'Saudi Arabia',
+    nativeName: 'المملكة العربية السعودية',
+    flag: '🇸🇦',
+    language: 'ar',
+    currency: 'SAR',
+    currencySymbol: 'SR',
+    administrativeLevels: {
+      national: 'الحكومة المركزية',
+      stateOrProvince: 'منطقة إدارية',
+      district: 'محافظة',
+      subDistrict: 'مركز'
+    },
+    datasetsAvailable: false,
+    activePilots: ['Riyadh Urban Expansion Zone'],
+    infrastructureIndicators: ['Desalinated Water Transmission', 'Smart Grid Power Distribution', 'Metro Feeder Corridors'],
+    dataAvailability: 'not_available'
+  },
+  {
+    code: 'AE',
+    name: 'United Arab Emirates',
+    nativeName: 'الإمارات العربية المتحدة',
+    flag: '🇦🇪',
+    language: 'ar',
+    currency: 'AED',
+    currencySymbol: 'AED',
+    administrativeLevels: {
+      national: 'Federal Authority',
+      stateOrProvince: 'Emirate',
+      district: 'Municipality Sector',
+      subDistrict: 'Community / District'
+    },
+    datasetsAvailable: false,
+    activePilots: ['Abu Dhabi Digital Infrastructure Sandbox'],
+    infrastructureIndicators: ['Smart Water Recirculation', 'District Cooling Infrastructure', 'Ultra-Reliable 5G/6G Networks'],
+    dataAvailability: 'not_available'
+  }
+];
+
+// Data Provenance & Ingestion Registry for 4 Fused Datasets
+export const DATASET_REGISTRY = [
+  {
+    id: 'ds-citizen-demand',
+    name: 'Multi-Channel Citizen Voice & Messaging Stream',
+    category: 'Citizen Demand',
+    source: 'CivicPulse Multi-Channel Ingestion Gateway (Voice, Text, WhatsApp, SMS)',
+    year: 2026,
+    geography: 'District & Sub-District PIN Boundary',
+    lastUpdated: 'Live Streaming (2026-09-29)',
+    dataType: 'Spatial Complaints, Audio Transcripts & NLP Vectors',
+    status: 'simulated' as const,
+    description: 'High-velocity grassroots feedback aggregated across 7 languages with 300m privacy buffers.',
+    sampleCount: 1420
+  },
+  {
+    id: 'ds-demographics',
+    name: 'Regional Demographic & Vulnerability Census Baseline',
+    category: 'Demographics',
+    source: 'Regional Demographic Dataset (Simulated for Hackathon Demonstration)',
+    year: 2025,
+    geography: 'Panchayat / Ward / Census Enumeration Block',
+    lastUpdated: '2025-12-31',
+    dataType: 'Population Counts, Age-Dependency, Multidimensional Poverty Index',
+    status: 'simulated' as const,
+    description: 'Provides vulnerable population ratios and per-capita exposure indices for score normalization.',
+    sampleCount: 28500
+  },
+  {
+    id: 'ds-infrastructure',
+    name: 'Infrastructure Service & Reliability Index (ISI)',
+    category: 'Infrastructure',
+    source: 'Infrastructure Service Index (Simulated for Prototype)',
+    year: 2025,
+    geography: 'District & Municipal Subdivisions',
+    lastUpdated: '2026-03-15',
+    dataType: 'Piped Water Coverage %, Road Quality Index, Power Outage Hours/Month',
+    status: 'simulated' as const,
+    description: 'Measures structural deficit gap vs statutory SDG target benchmarks.',
+    sampleCount: 18
+  },
+  {
+    id: 'ds-investment',
+    name: 'Illustrative Public Capital Investment Pipeline (MTIP)',
+    category: 'Public Investment',
+    source: 'Illustrative Public Investment Dataset (Prototype Demonstration)',
+    year: 2026,
+    geography: 'State / District Budget Allocations',
+    lastUpdated: '2026-04-01',
+    dataType: 'Allocated Capital Budgets, Ongoing Contract Tenders, Fiscal Capacity',
+    status: 'simulated' as const,
+    description: 'Avoids duplicate project funding and identifies underserved spatial zones with zero capital allocations.',
+    sampleCount: 12
   }
 ];
 

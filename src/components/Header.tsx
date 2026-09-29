@@ -18,9 +18,11 @@ import {
   X,
   User,
   LogOut,
-  Bell
+  Bell,
+  Database
 } from 'lucide-react';
 import AISwitchboardModal from './AISwitchboardModal';
+import PrototypeDisclosure from './PrototypeDisclosure';
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage, LANGUAGES } from '@/context/LanguageContext';
 
@@ -63,6 +65,7 @@ export default function Header() {
   const navLinks = [
     { href: '/', label: t('nav.overview'), icon: Radio },
     { href: '/citizen', label: t('nav.citizen'), icon: Compass },
+    { href: '/data', label: 'Data Fusion', icon: Database },
     { href: '/operations', label: t('nav.operations'), icon: Layers },
     { href: '/planning', label: t('nav.planning'), icon: SlidersHorizontal },
     { href: '/impact', label: t('nav.impact'), icon: CheckCircle2 },
@@ -101,9 +104,7 @@ export default function Header() {
                 <div className="flex items-center space-x-1.5">
                   <span className="font-display font-extrabold text-lg sm:text-xl tracking-tight text-stone-900">BRICS</span>
                   <span className="font-display font-bold text-lg sm:text-xl tracking-tight text-orange-600">CivicPulse</span>
-                  <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-mono font-extrabold bg-orange-100 text-orange-800 border border-orange-300">
-                    {t('header.dpg_badge')}
-                  </span>
+                  <PrototypeDisclosure variant="badge" />
                 </div>
                 <span className="text-[10px] text-stone-500 font-semibold hidden 2xl:block leading-tight">
                   {t('header.subtitle')}

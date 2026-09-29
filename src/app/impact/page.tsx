@@ -17,12 +17,17 @@ import {
   Activity,
   AlertCircle
 } from 'lucide-react';
-import { ProjectRegistryItem } from '@/types';
+import { ProjectRegistryItem, DataProvenanceInfo } from '@/types';
 import { SEED_PROJECTS } from '@/data/seed-data';
+import DataStatusBadge from '@/components/DataStatusBadge';
+import DataProvenanceModal from '@/components/DataProvenanceModal';
+import PrototypeDisclosure from '@/components/PrototypeDisclosure';
 
 export default function ImpactPage() {
   const [projects, setProjects] = useState<ProjectRegistryItem[]>(SEED_PROJECTS);
   const [selectedProject, setSelectedProject] = useState<ProjectRegistryItem | null>(SEED_PROJECTS[0]);
+  const [provenanceModalOpen, setProvenanceModalOpen] = useState(false);
+  const [activeProvenance, setActiveProvenance] = useState<DataProvenanceInfo | null>(null);
 
   useEffect(() => {
     async function loadProjects() {
@@ -177,27 +182,98 @@ export default function ImpactPage() {
                 </div>
               </div>
 
-              {/* Baseline vs Target */}
-              <div className="p-5 rounded-3xl bg-orange-50/60 border border-orange-200 space-y-3">
-                <div className="flex items-center space-x-2 text-xs font-bold text-orange-700">
-                  <TrendingUp className="w-4 h-4" />
-                  <span>Public Impact & Service Outcome Metric</span>
+              {/* Baseline → Intervention → Outcome Structured Progression (Priority 11) */}
+              <div className="p-6 rounded-3xl bg-stone-900 border border-stone-800 text-stone-100 space-y-4 shadow-xl">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-stone-800 pb-3">
+                  <div className="flex items-center space-x-2">
+                    <TrendingUp className="w-4 h-4 text-orange-400" />
+                    <h3 className="text-xs font-bold text-white uppercase tracking-wider font-mono">
+                      Baseline → Intervention → Target Impact Progression
+                    </h3>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setActiveProvenance({
+                        datasetName: selectedProject.title,
+                        source: 'Municipal Public Works Registry & Sensor Telemetry',
+                        year: 2026,
+                        geography: `${selectedProject.district}, ${selectedProject.country}`,
+                        lastUpdated: selectedProject.lastStatusUpdate,
+                        dataType: 'Service Availability & Citizen Satisfaction Index',
+                        status: 'simulated',
+                        confidenceScore: 0.95,
+                      });
+                      setProvenanceModalOpen(true);
+                    }}
+                    className="text-[11px] font-mono text-orange-400 hover:underline font-bold"
+                  >
+                    View Data Provenance 🔍
+                  </button>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 font-mono text-xs">
-                  <div className="p-3.5 rounded-2xl bg-white border border-stone-200 space-y-1">
-                    <span className="text-[10px] uppercase text-red-600 font-bold">Baseline (Pre-project)</span>
-                    <div className="text-red-700 font-bold text-sm">{selectedProject.baselineMetric.value}</div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {/* Step 1: Baseline */}
+                  <div className="p-4 rounded-2xl bg-stone-950 border border-rose-500/30 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] uppercase font-mono font-bold text-rose-400">1. Baseline (Pre-Intervention)</span>
+                      <DataStatusBadge status="measured" size="xs" />
+                    </div>
+                    <div className="text-rose-400 font-mono font-extrabold text-base">{selectedProject.baselineMetric.value}</div>
+                    <p className="text-[11px] text-stone-400 font-sans leading-tight">
+                      Observed service deficit before public capital disbursement.
+                    </p>
                   </div>
 
-                  <div className="p-3.5 rounded-2xl bg-white border border-orange-200 space-y-1">
-                    <span className="text-[10px] uppercase text-orange-600 font-bold">Current Progress</span>
-                    <div className="text-orange-700 font-bold text-sm">{selectedProject.currentMetric.value}</div>
+                  {/* Step 2: Current Progress */}
+                  <div className="p-4 rounded-2xl bg-stone-950 border border-amber-500/30 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] uppercase font-mono font-bold text-amber-400">2. Current Delivery</span>
+                      <DataStatusBadge status="simulated" size="xs" />
+                    </div>
+                    <div className="text-amber-400 font-mono font-extrabold text-base">{selectedProject.currentMetric.value}</div>
+                    <p className="text-[11px] text-stone-400 font-sans leading-tight">
+                      Ground engineering execution and interim telemetry.
+                    </p>
                   </div>
 
-                  <div className="p-3.5 rounded-2xl bg-white border border-emerald-200 space-y-1">
-                    <span className="text-[10px] uppercase text-emerald-600 font-bold">Target Outcome</span>
-                    <div className="text-emerald-700 font-bold text-sm">{selectedProject.targetMetric.value}</div>
+                  {/* Step 3: Target Outcome */}
+                  <div className="p-4 rounded-2xl bg-stone-950 border border-emerald-500/30 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] uppercase font-mono font-bold text-emerald-400">3. Target Outcome</span>
+                      <DataStatusBadge status="projected" size="xs" />
+                    </div>
+                    <div className="text-emerald-400 font-mono font-extrabold text-base">{selectedProject.targetMetric.value}</div>
+                    <p className="text-[11px] text-stone-400 font-sans leading-tight">
+                      Model-forecasted statutory SDG benchmark upon commissioning.
+                    </p>
+                  </div>
+                </div>
+
+                {/* 6 Key Impact Tracking Indicators */}
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 pt-2 border-t border-stone-800 text-[10px] font-mono">
+                  <div className="p-2 rounded-xl bg-stone-950 text-center">
+                    <span className="text-stone-500 block">Response Time</span>
+                    <span className="text-emerald-400 font-bold">&lt; 42 Hours</span>
+                  </div>
+                  <div className="p-2 rounded-xl bg-stone-950 text-center">
+                    <span className="text-stone-500 block">Service Coverage</span>
+                    <span className="text-cyan-400 font-bold">94.8% Area</span>
+                  </div>
+                  <div className="p-2 rounded-xl bg-stone-950 text-center">
+                    <span className="text-stone-500 block">Reliability</span>
+                    <span className="text-orange-400 font-bold">99.2% Uptime</span>
+                  </div>
+                  <div className="p-2 rounded-xl bg-stone-950 text-center">
+                    <span className="text-stone-500 block">Citizen Rating</span>
+                    <span className="text-amber-400 font-bold">{selectedProject.citizenSatisfactionAverage}/5.0</span>
+                  </div>
+                  <div className="p-2 rounded-xl bg-stone-950 text-center">
+                    <span className="text-stone-500 block">Completion</span>
+                    <span className="text-white font-bold">{Math.round((selectedProject.spentBudgetUsd / selectedProject.allocatedBudgetUsd) * 100)}%</span>
+                  </div>
+                  <div className="p-2 rounded-xl bg-stone-950 text-center">
+                    <span className="text-stone-500 block">Resolution</span>
+                    <span className="text-emerald-400 font-bold">91.4% Rate</span>
                   </div>
                 </div>
               </div>
@@ -360,6 +436,14 @@ export default function ImpactPage() {
           </div>
         </div>
       </div>
+
+      {/* Data Provenance Modal */}
+      <DataProvenanceModal
+        isOpen={provenanceModalOpen}
+        onClose={() => setProvenanceModalOpen(false)}
+        provenance={activeProvenance}
+        metricName={activeProvenance?.datasetName}
+      />
 
     </div>
   );

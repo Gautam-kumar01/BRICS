@@ -244,48 +244,72 @@ export default function MapComponent({
           })}
         </div>
 
-        {/* Hover / Selected Cluster Information Card Overlay */}
+        {/* Hover / Selected Cluster Information Card Overlay (Priority 10) */}
         {(hoveredCluster || (selectedClusterId && clusters.find(c => c.id === selectedClusterId))) && (
-          <div className="absolute bottom-4 left-4 max-w-sm rounded-2xl bg-brics-950 border border-civic-orange/40 p-4 shadow-2xl backdrop-blur-xl animate-in fade-in slide-in-from-bottom-2 duration-150 z-30">
+          <div className="absolute bottom-4 left-4 max-w-md rounded-3xl bg-stone-950/95 border border-orange-500/40 p-5 shadow-2xl backdrop-blur-xl animate-in fade-in slide-in-from-bottom-2 duration-150 z-30 space-y-3 text-stone-100">
             {(() => {
               const current = hoveredCluster || clusters.find(c => c.id === selectedClusterId)!;
               const col = getDomainColor(current.domain);
+              const urgentCount = Math.round(current.submissionCount * 0.35);
+              const infGap = Math.round(current.severityScore * 0.9);
+              
               return (
-                <div className="space-y-2 text-slate-100">
+                <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className={`text-[10px] font-mono uppercase px-2 py-0.5 rounded font-extrabold ${col.bg} text-white`}>
+                    <span className={`text-[10px] font-mono uppercase px-2.5 py-0.5 rounded font-extrabold ${col.bg} text-white`}>
                       {current.domain} • {current.clusterCode}
                     </span>
-                    <span className="text-[11px] text-emerald-400 font-mono font-bold">
-                      {current.submissionCount} Citizen Reports
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-orange-950 text-orange-400 border border-orange-500/30 font-bold">
+                      AI Priority: {current.severityScore.toFixed(1)}/100
                     </span>
                   </div>
-                  <h4 className="font-display font-extrabold text-sm text-white leading-snug">
-                    {current.title}
-                  </h4>
-                  <p className="text-xs text-brics-100 line-clamp-2">
-                    {current.summaryRationale}
-                  </p>
-                  <div className="grid grid-cols-2 gap-2 pt-2 border-t border-white/10 text-[11px]">
+
+                  <div>
+                    <h4 className="font-display font-extrabold text-sm text-white leading-snug">
+                      {current.title}
+                    </h4>
+                    <p className="text-xs text-stone-300 line-clamp-2 mt-1">
+                      {current.summaryRationale}
+                    </p>
+                  </div>
+
+                  {/* Multi-Dimensional Hotspot Attributes */}
+                  <div className="grid grid-cols-2 gap-2 p-3 rounded-2xl bg-stone-900/90 border border-stone-800 text-[11px] font-mono">
                     <div>
-                      <span className="text-amber-200">Impacted:</span>
-                      <span className="ml-1 text-white font-bold">{current.affectedPopulation.toLocaleString()} pop</span>
+                      <span className="text-stone-500 block text-[10px]">Area Jurisdiction:</span>
+                      <strong className="text-white font-sans">{current.district}</strong>
                     </div>
                     <div>
-                      <span className="text-amber-200">Est. Cost:</span>
-                      <span className="ml-1 text-emerald-300 font-mono font-bold">
-                        ${(current.estimatedCostUsd / 1000000).toFixed(2)}M
-                      </span>
+                      <span className="text-stone-500 block text-[10px]">Dominant Issue:</span>
+                      <strong className="text-orange-400 uppercase font-sans">{current.domain}</strong>
+                    </div>
+                    <div>
+                      <span className="text-stone-500 block text-[10px]">Citizen Reports:</span>
+                      <strong className="text-white">{current.submissionCount} (Urgent: {urgentCount})</strong>
+                    </div>
+                    <div>
+                      <span className="text-stone-500 block text-[10px]">Affected Population:</span>
+                      <strong className="text-cyan-400">~{current.affectedPopulation.toLocaleString()}</strong>
+                    </div>
+                    <div>
+                      <span className="text-stone-500 block text-[10px]">Infrastructure Gap:</span>
+                      <strong className="text-rose-400">{infGap}% Deficit</strong>
+                    </div>
+                    <div>
+                      <span className="text-stone-500 block text-[10px]">Existing Investment:</span>
+                      <strong className="text-amber-400">Low / Unserved</strong>
                     </div>
                   </div>
-                  <div className="pt-1">
-                    <div className="flex justify-between text-[10px] text-amber-200 mb-1 font-semibold">
-                      <span>Multi-Criteria Severity Score</span>
-                      <span className="font-mono font-bold text-civic-orange">{current.severityScore}%</span>
-                    </div>
-                    <div className="w-full h-1.5 bg-brics-800 rounded-full overflow-hidden">
-                      <div className="h-full bg-gradient-to-r from-civic-orange to-amber-400" style={{ width: `${current.severityScore}%` }} />
-                    </div>
+
+                  <div className="flex items-center justify-between pt-1 text-xs">
+                    <span className="text-[10px] font-mono text-stone-500">🛡️ 300m Privacy Obfuscation</span>
+                    <a
+                      href="/planning"
+                      className="px-3 py-1.5 rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-bold text-xs transition-colors flex items-center gap-1 shadow-xs"
+                    >
+                      <span>View Recommendation</span>
+                      <span>→</span>
+                    </a>
                   </div>
                 </div>
               );
@@ -293,20 +317,31 @@ export default function MapComponent({
           </div>
         )}
 
-        {/* Legend */}
-        <div className="absolute bottom-4 right-4 bg-brics-950/95 backdrop-blur-md px-3.5 py-2.5 rounded-2xl border border-civic-orange/30 shadow-xl text-[11px] text-amber-100 space-y-1.5 hidden md:block">
-          <div className="font-bold text-[10px] text-amber-300 uppercase tracking-wider">Demand Legend</div>
-          <div className="flex items-center space-x-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-blue-500" />
-            <span className="font-medium text-white">Water Disruption</span>
+        {/* Legend with Continuous Demand & Gap Gradients */}
+        <div className="absolute bottom-4 right-4 bg-stone-950/95 backdrop-blur-md px-4 py-3 rounded-2xl border border-stone-800 shadow-2xl text-[11px] text-stone-300 space-y-2.5 hidden md:block max-w-xs">
+          <div className="flex items-center justify-between font-mono font-bold text-[10px] text-stone-400 uppercase tracking-wider border-b border-stone-800 pb-1">
+            <span>Demand & Deficit Legend</span>
+            <span className="text-orange-400">GIS 250m</span>
           </div>
-          <div className="flex items-center space-x-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-civic-orange" />
-            <span className="font-medium text-white">Road / Bridge Collapse</span>
+          
+          <div className="space-y-1">
+            <div className="flex justify-between text-[10px] text-stone-400 font-mono">
+              <span>Demand Density:</span>
+              <span className="text-white font-bold">Low ─── High</span>
+            </div>
+            <div className="w-full h-1.5 rounded-full bg-gradient-to-r from-blue-500 via-amber-500 to-orange-600" />
           </div>
-          <div className="flex items-center space-x-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-purple-500" />
-            <span className="font-medium text-white">Broadband & DPI Gap</span>
+
+          <div className="space-y-1">
+            <div className="flex justify-between text-[10px] text-stone-400 font-mono">
+              <span>Infrastructure Gap:</span>
+              <span className="text-rose-400 font-bold">Low ─── Critical</span>
+            </div>
+            <div className="w-full h-1.5 rounded-full bg-gradient-to-r from-emerald-500 via-amber-500 to-rose-600" />
+          </div>
+
+          <div className="pt-1 text-[10px] font-mono text-stone-500 leading-tight">
+            Public View: 300m Aggregated Buffer • Precise operational GPS reserved for verified municipal engineers.
           </div>
         </div>
 

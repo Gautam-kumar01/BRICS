@@ -40,6 +40,8 @@ import VoiceRecorder, { LiveLocationData } from '@/components/VoiceRecorder';
 import { CitizenSubmission, SupportedLanguage, SubmissionChannel, InfrastructureDomain, UrgencyLevel } from '@/types';
 import { AIExtractionResult } from '@/lib/ai/ai-gateway';
 import { SEED_SUBMISSIONS } from '@/data/seed-data';
+import DataStatusBadge from '@/components/DataStatusBadge';
+import PrototypeDisclosure from '@/components/PrototypeDisclosure';
 
 export default function CitizenPage() {
   const [activeTab, setActiveTab] = useState<'submit' | 'track' | 'whatsapp' | 'ussd'>('submit');
@@ -442,6 +444,103 @@ export default function CitizenPage() {
           <span>{autoDetectedNotification}</span>
         </div>
       )}
+
+      {/* ==================================================================== */}
+      {/* MULTI-CHANNEL CIVIC INTAKE ARCHITECTURE (Priority 6 Alignment)       */}
+      {/* ==================================================================== */}
+      <div className="p-6 rounded-3xl bg-stone-900 border border-stone-800 text-stone-100 shadow-xl space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-stone-800 pb-3">
+          <div className="flex items-center gap-2">
+            <span className="px-2.5 py-0.5 rounded-md bg-orange-500/20 text-orange-400 font-mono text-[10px] font-bold uppercase tracking-wider border border-orange-500/30">
+              Universal Ingestion
+            </span>
+            <h2 className="text-sm font-bold text-white">Multi-Channel Civic Intake Architecture</h2>
+          </div>
+          <div className="flex items-center gap-2">
+            <DataStatusBadge status="simulated" size="xs" />
+            <span className="text-[11px] font-mono text-stone-400">Prototype Gateway Integration</span>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          <button
+            onClick={() => { setActiveTab('submit'); setChannel('web_voice'); }}
+            className={`p-4 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between space-y-2 ${
+              activeTab === 'submit' && channel === 'web_voice'
+                ? 'bg-orange-950/40 border-orange-500 ring-1 ring-orange-500'
+                : 'bg-stone-950 border-stone-800 hover:border-stone-700'
+            }`}
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-2xl">🎙️</span>
+              <span className="text-[10px] font-mono font-bold text-orange-400 uppercase bg-orange-950/60 px-2 py-0.5 rounded">Voice Channel</span>
+            </div>
+            <div>
+              <h3 className="text-xs font-bold text-white">Vernacular Speech</h3>
+              <p className="text-[11px] text-stone-400 mt-0.5">Citizen speaks naturally in 7 languages with live audio transcription & auto-GPS.</p>
+            </div>
+          </button>
+
+          <button
+            onClick={() => { setActiveTab('submit'); setChannel('web_text'); }}
+            className={`p-4 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between space-y-2 ${
+              activeTab === 'submit' && channel === 'web_text'
+                ? 'bg-orange-950/40 border-orange-500 ring-1 ring-orange-500'
+                : 'bg-stone-950 border-stone-800 hover:border-stone-700'
+            }`}
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-2xl">💬</span>
+              <span className="text-[10px] font-mono font-bold text-cyan-400 uppercase bg-cyan-950/60 px-2 py-0.5 rounded">Web Portal</span>
+            </div>
+            <div>
+              <h3 className="text-xs font-bold text-white">Multimodal Web Text</h3>
+              <p className="text-[11px] text-stone-400 mt-0.5">Direct complaint registration with photo/evidence uploads and live tracking.</p>
+            </div>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('whatsapp')}
+            className={`p-4 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between space-y-2 ${
+              activeTab === 'whatsapp'
+                ? 'bg-emerald-950/40 border-emerald-500 ring-1 ring-emerald-500'
+                : 'bg-stone-950 border-stone-800 hover:border-stone-700'
+            }`}
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-2xl">📱</span>
+              <span className="text-[10px] font-mono font-bold text-emerald-400 uppercase bg-emerald-950/60 px-2 py-0.5 rounded">WhatsApp Gateway</span>
+            </div>
+            <div>
+              <h3 className="text-xs font-bold text-white">WhatsApp Bot</h3>
+              <p className="text-[11px] text-stone-400 mt-0.5">Conversational messaging gateway for location pins, voice clips, and status checks.</p>
+            </div>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('ussd')}
+            className={`p-4 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between space-y-2 ${
+              activeTab === 'ussd'
+                ? 'bg-amber-950/40 border-amber-500 ring-1 ring-amber-500'
+                : 'bg-stone-950 border-stone-800 hover:border-stone-700'
+            }`}
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-2xl">✉️</span>
+              <span className="text-[10px] font-mono font-bold text-amber-400 uppercase bg-amber-950/60 px-2 py-0.5 rounded">2G SMS / USSD</span>
+            </div>
+            <div>
+              <h3 className="text-xs font-bold text-white">Low-Bandwidth Intake</h3>
+              <p className="text-[11px] text-stone-400 mt-0.5">Feature-phone compatible intake via toll-free shortcode strings without Internet.</p>
+            </div>
+          </button>
+        </div>
+
+        <div className="pt-2 flex items-center justify-between text-[11px] font-mono text-stone-500 border-t border-stone-800">
+          <span>Ingestion Pipeline: WhatsApp / SMS / Voice → Messaging Gateway → CivicPulse AI Intake → Classification + Geo</span>
+          <span className="text-orange-400">Zero Commercial APIs Required</span>
+        </div>
+      </div>
 
       {/* ==================================================================== */}
       {/* TAB 1: SUBMIT PROBLEM                                                */}

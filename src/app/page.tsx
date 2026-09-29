@@ -33,13 +33,17 @@ import {
   Award,
   RefreshCw,
   ExternalLink,
-  ChevronRight
+  ChevronRight,
+  SlidersHorizontal
 } from 'lucide-react';
 import MapComponent from '@/components/MapComponent';
 import VoiceRecorder, { LiveLocationData } from '@/components/VoiceRecorder';
 import { SEED_CLUSTERS, SEED_SUBMISSIONS } from '@/data/seed-data';
 import { SupportedLanguage, CitizenSubmission } from '@/types';
 import { useLanguage } from '@/context/LanguageContext';
+import PrototypeDisclosure from '@/components/PrototypeDisclosure';
+import AIPipelineVisualizer from '@/components/AIPipelineVisualizer';
+import DataStatusBadge from '@/components/DataStatusBadge';
 
 export default function HomePage() {
   const router = useRouter();
@@ -331,6 +335,9 @@ export default function HomePage() {
   return (
     <div className="space-y-16 sm:space-y-24 pb-20 text-stone-900">
       
+      {/* Top Prototype & Demo Disclosure Banner */}
+      <PrototypeDisclosure />
+
       {/* ==================================================================== */}
       {/* 1. HERO SECTION: Problem Statement Alignment & Glassmorphism         */}
       {/* ==================================================================== */}
@@ -742,11 +749,11 @@ export default function HomePage() {
             </p>
 
             <div className="pt-2 border-t border-stone-100 flex items-center justify-between text-xs">
-              <span className="text-stone-500">Designated Nodal DM:</span>
+              <span className="text-stone-500">Designated Authority:</span>
               <span className="font-bold text-stone-900">
-                {activePilotTerritory === 'jehanabad' ? 'Shri Alok Ranjan (IAS)' :
-                 activePilotTerritory === 'dhule' ? 'Dr. Vivek Deshmukh (IAS)' :
-                 activePilotTerritory === 'tshwane' ? 'Dr. Thabo Mokoena' : 'Dr. Maria Santos'}
+                {activePilotTerritory === 'jehanabad' ? 'Demo District Authority (Jehanabad)' :
+                 activePilotTerritory === 'dhule' ? 'Demo District Authority (Dhule)' :
+                 activePilotTerritory === 'tshwane' ? 'Demo Municipal Authority (Tshwane)' : 'Demo Infrastructure Officer (Recife)'}
               </span>
             </div>
           </div>
@@ -1096,6 +1103,98 @@ export default function HomePage() {
 
         <div className="rounded-3xl bg-white/90 backdrop-blur-xl border-2 border-orange-200 p-2 shadow-md overflow-hidden">
           <MapComponent clusters={SEED_CLUSTERS} />
+        </div>
+      </section>
+
+      {/* ==================================================================== */}
+      {/* 7. HOW IT WORKS: From Citizen Voice to Public Impact (10-Step Journey)*/}
+      {/* ==================================================================== */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+        <div className="text-center space-y-3 max-w-3xl mx-auto">
+          <span className="text-xs font-mono font-bold uppercase tracking-wider text-orange-700 bg-orange-100 px-3 py-1 rounded-full border border-orange-300">
+            Multi-Stage DPI Workflow
+          </span>
+          <h2 className="text-3xl sm:text-4xl font-display font-extrabold text-stone-900">
+            From Citizen Voice to Public Impact
+          </h2>
+          <p className="text-sm text-stone-600 font-medium">
+            A transparent, 10-step Digital Public Infrastructure pipeline transforming vernacular audio reports into auditable capital budgets under sovereign human oversight.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3.5">
+          {[
+            { step: '01', title: 'Citizen Voice & Intake', desc: 'Citizen speaks naturally in native language or submits via Web, WhatsApp or SMS.', icon: '🎙️' },
+            { step: '02', title: 'AI Linguistic Understanding', desc: 'FastText & Whisper classify dialect, transcribe audio, and normalize text.', icon: '🌐' },
+            { step: '03', title: 'Spatial & Category Extraction', desc: 'Automated entity extraction identifies infrastructure domain, urgency and PIN code.', icon: '📍' },
+            { step: '04', title: 'Duplicate Clustering', desc: 'DBSCAN algorithms aggregate overlapping neighbourhood complaints into clusters.', icon: '🔗' },
+            { step: '05', title: 'Multi-Source Data Fusion', desc: 'Citizen voice is cross-referenced with Census demographics, ISI gap indices and MTIP budgets.', icon: '🧬' },
+            { step: '06', title: 'Demand Hotspots Identified', desc: 'Spatial GIS layers map severity density with 300m privacy buffers on public views.', icon: '🗺️' },
+            { step: '07', title: 'Explainable AI Priorities', desc: 'Deterministic MCDA models rank candidate civil works with mathematical evidence attribution.', icon: '📊' },
+            { step: '08', title: 'Authorized Human Review', desc: 'AI recommends. Authorized district officials decide: approve, defer, or request evidence.', icon: '🏛️' },
+            { step: '09', title: 'Delivery & Tenders Tracked', desc: 'Municipal work orders, contractor milestones, and budget disbursement tracked in real time.', icon: '🏗️' },
+            { step: '10', title: 'Long-Term Impact Measured', desc: 'Baseline → Intervention → Target progression monitored with ground-truth citizen satisfaction.', icon: '✅' },
+          ].map((item) => (
+            <div key={item.step} className="p-4 rounded-2xl bg-white border border-orange-200 shadow-sm hover:border-orange-400 transition-all flex flex-col justify-between space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-2xl">{item.icon}</span>
+                <span className="font-mono text-xs font-extrabold text-orange-600 bg-orange-50 px-2 py-0.5 rounded border border-orange-200">{item.step}</span>
+              </div>
+              <div>
+                <h4 className="font-bold text-xs text-stone-900">{item.title}</h4>
+                <p className="text-[11px] text-stone-600 mt-1 leading-relaxed">{item.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ==================================================================== */}
+      {/* 8. AI DECISION PIPELINE VISUALIZER (Interactive Deep Dive)          */}
+      {/* ==================================================================== */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <AIPipelineVisualizer />
+      </section>
+
+      {/* ==================================================================== */}
+      {/* 9. FINAL VALUE PROPOSITION BANNER (Track 1 Alignment)               */}
+      {/* ==================================================================== */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="p-8 sm:p-12 rounded-3xl bg-gradient-to-br from-stone-950 via-stone-900 to-[#2A150C] text-stone-100 border border-orange-500/30 shadow-2xl space-y-6 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-orange-500/10 rounded-full blur-3xl pointer-events-none" />
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
+            <div className="space-y-3 max-w-3xl">
+              <div className="flex items-center gap-2">
+                <span className="px-3 py-1 rounded-md bg-orange-500/20 text-orange-400 font-mono text-xs font-bold uppercase tracking-wider border border-orange-500/30">
+                  Digital Public Infrastructure Standard
+                </span>
+                <DataStatusBadge status="simulated" size="xs" />
+              </div>
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-display font-extrabold text-white tracking-tight leading-tight">
+                Citizen Voice → AI Intelligence → Evidence-Based Infrastructure Decisions
+              </h2>
+              <p className="text-xs sm:text-sm text-stone-300 leading-relaxed font-sans">
+                CivicPulse transforms fragmented citizen requests into explainable, spatially-aware infrastructure priorities while keeping final decisions under accountable human oversight.
+              </p>
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0">
+              <Link
+                href="/citizen"
+                className="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-600 text-white text-xs font-bold transition-all shadow-lg shadow-orange-500/25 flex items-center justify-center space-x-2"
+              >
+                <Sparkles className="w-4 h-4" />
+                <span>Launch Citizen Intake</span>
+              </Link>
+              <Link
+                href="/planning"
+                className="px-6 py-3.5 rounded-2xl bg-stone-800 hover:bg-stone-700 text-stone-200 text-xs font-bold transition-all border border-stone-700 flex items-center justify-center space-x-2"
+              >
+                <SlidersHorizontal className="w-4 h-4" />
+                <span>Policy Intelligence Desk</span>
+              </Link>
+            </div>
+          </div>
         </div>
       </section>
 

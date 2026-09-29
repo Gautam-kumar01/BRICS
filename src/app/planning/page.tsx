@@ -26,7 +26,11 @@ import {
 import MapComponent from '@/components/MapComponent';
 import ScoreBreakdownBar from '@/components/ScoreBreakdownBar';
 import ScenarioCompareSlider from '@/components/ScenarioCompareSlider';
-import { CandidateRecommendation, DemandCluster, InfrastructureIndicator, PolicyScenario } from '@/types';
+import BudgetSimulator from '@/components/BudgetSimulator';
+import DataStatusBadge from '@/components/DataStatusBadge';
+import DataProvenanceModal from '@/components/DataProvenanceModal';
+import PrototypeDisclosure from '@/components/PrototypeDisclosure';
+import { CandidateRecommendation, DemandCluster, InfrastructureIndicator, PolicyScenario, DataProvenanceInfo } from '@/types';
 import { SEED_CLUSTERS, SEED_RECOMMENDATIONS, SEED_INDICATORS, SEED_SCENARIOS, SEED_SUBMISSIONS } from '@/data/seed-data';
 import { useAuth } from '@/context/AuthContext';
 
@@ -41,6 +45,9 @@ export default function PlanningPage() {
   const [activeTab, setActiveTab] = useState<'ranking' | 'scenarios' | 'indicators' | 'map'>('ranking');
   const [isExporting, setIsExporting] = useState(false);
   const [selectedDistrictScope, setSelectedDistrictScope] = useState<string>('all');
+  const [provenanceModalOpen, setProvenanceModalOpen] = useState(false);
+  const [activeProvenance, setActiveProvenance] = useState<DataProvenanceInfo | null>(null);
+  const [decisionNotice, setDecisionNotice] = useState<string | null>(null);
 
   useEffect(() => {
     if (assignedDistrict) {
@@ -102,7 +109,15 @@ export default function PlanningPage() {
     }
   }, [filteredRecommendations.length, activeDistrictFilter]);
 
-  const handleDecision = async (id: string, status: CandidateRecommendation['approvedStatus']) => {
+  const handleDecision = async (id: string, status: CandidateRecommendation['approvedStatus'], customNote?: string) => {
+    const officerTitle = user?.badge || user?.name || 'Demo District Authority';
+    const note = customNote || (
+      status === 'included_in_plan' ? 'Approved by Authorized Human Authority for Capital Budget Integration.' :
+      status === 'rejected' ? 'Rejected following spatial cost-efficiency evaluation.' :
+      status === 'deferred' ? 'Deferred to subsequent fiscal allocation cycle.' :
+      'Flagged for additional field engineering evidence.'
+    );
+
     try {
       const res = await fetch('/api/recommendations', {
         method: 'PATCH',
@@ -110,8 +125,8 @@ export default function PlanningPage() {
         body: JSON.stringify({
           id,
           approvedStatus: status,
-          rationale: 'Approved via Multi-Criteria Policy Intelligence workspace.',
-          officerName: 'Dr. Thabo Mokoena, Lead Infrastructure Planner',
+          rationale: note,
+          officerName: officerTitle,
         }),
       });
 
@@ -119,15 +134,32 @@ export default function PlanningPage() {
         const updated = await res.json();
         setRecommendations(prev => prev.map(r => r.id === updated.id ? updated : r));
         if (selectedRec?.id === updated.id) setSelectedRec(updated);
+        setDecisionNotice(`Decision recorded: ${status.replace('_', ' ').toUpperCase()} by ${officerTitle}`);
+        setTimeout(() => setDecisionNotice(null), 5000);
       }
     } catch (e) {
       alert('Failed to update recommendation');
     }
   };
 
+  const openProvenance = (metricName: string, metricVal: string | number) => {
+    setActiveProvenance({
+      datasetName: 'CivicPulse Multi-Source Prioritization Model',
+      source: 'MCDA Priority Engine (Demographics + ISI + MTIP + Citizen Voice)',
+      year: 2026,
+      geography: selectedRec?.district || 'District Jurisdiction',
+      lastUpdated: '2026-09-29',
+      dataType: 'Composite MCDA Weighted Index (0-100)',
+      status: 'simulated',
+      confidenceScore: selectedRec?.confidence || 0.94,
+      sampleCount: selectedRec?.beneficiariesCount || 28500,
+    });
+    setProvenanceModalOpen(true);
+  };
+
   const handleExportBrief = (format: 'brief' | 'csv' | 'json') => {
     setIsExporting(true);
-    const url = `/api/export?format=${format}&type=recommendations&officer=Dr.+Maria+Santos,+Infrastructure+Director`;
+    const url = `/api/export?format=${format}&type=recommendations&officer=Demo+District+Authority`;
     window.open(url, '_blank');
     setTimeout(() => setIsExporting(false), 1000);
   };
@@ -456,38 +488,75 @@ export default function PlanningPage() {
                   </p>
                 </div>
 
-                <div className="pt-2 border-t border-stone-200 space-y-3">
-                  <div className="text-xs text-stone-600">
-                    <span>Authorized Human Decision: </span>
-                    <strong className="text-stone-900">{selectedRec.decidedByOfficer || 'Pending Committee Review'}</strong>
+                {/* Human-in-the-Loop Governance Panel (Priority 8 Alignment) */}
+                <div className="p-5 rounded-2xl bg-stone-900 border border-stone-800 text-stone-100 space-y-4 shadow-md">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-stone-800 pb-3">
+                    <div className="flex items-center gap-2">
+                      <span className="px-2 py-0.5 rounded bg-orange-500/20 text-orange-400 font-mono text-[10px] font-bold uppercase border border-orange-500/30">
+                        Human Gate
+                      </span>
+                      <h3 className="text-xs font-bold text-white">AI Recommends. Humans Decide.</h3>
+                    </div>
+                    <DataStatusBadge status="simulated" size="xs" />
                   </div>
 
+                  <p className="text-[11px] text-stone-300 leading-relaxed">
+                    AI provides evidence-based recommendations. Final infrastructure allocations and public capital disbursements remain under exclusive authorized human governance.
+                  </p>
+
+                  <div className="p-3 rounded-xl bg-stone-950 border border-stone-800 text-xs flex justify-between items-center font-mono text-[11px]">
+                    <span className="text-stone-400">Current Status:</span>
+                    <span className={`px-2.5 py-0.5 rounded font-bold uppercase ${
+                      selectedRec.approvedStatus === 'included_in_plan' ? 'bg-emerald-950 text-emerald-400 border border-emerald-500/40' :
+                      selectedRec.approvedStatus === 'rejected' ? 'bg-rose-950 text-rose-400 border border-rose-500/40' :
+                      'bg-amber-950 text-amber-400 border border-amber-500/40'
+                    }`}>
+                      {selectedRec.approvedStatus.replace('_', ' ')}
+                    </span>
+                  </div>
+
+                  {decisionNotice && (
+                    <div className="p-2.5 rounded-xl bg-emerald-950/80 border border-emerald-500 text-emerald-300 text-xs font-bold flex items-center gap-2">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                      <span>{decisionNotice}</span>
+                    </div>
+                  )}
+
                   {isOfficial ? (
-                    <div className="flex flex-wrap items-center gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
                       <button
                         onClick={() => handleDecision(selectedRec.id, 'included_in_plan')}
-                        className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm flex items-center space-x-1.5 transition-all cursor-pointer"
+                        className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-md shadow-emerald-950 transition-all flex items-center justify-center space-x-1.5 cursor-pointer"
                       >
                         <CheckCircle2 className="w-4 h-4" />
-                        <span>Include in Capital Budget Plan</span>
+                        <span>Approve for Capital Plan</span>
                       </button>
 
                       <button
                         onClick={() => handleDecision(selectedRec.id, 'deferred')}
-                        className="px-4 py-2.5 rounded-xl bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-800 text-xs font-bold transition-all cursor-pointer"
+                        className="px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-stone-950 text-xs font-bold transition-all flex items-center justify-center space-x-1.5 cursor-pointer"
                       >
-                        Defer to FY2027
+                        <span>Request Field Review</span>
+                      </button>
+
+                      <button
+                        onClick={() => handleDecision(selectedRec.id, 'rejected')}
+                        className="px-4 py-2 rounded-xl bg-stone-800 hover:bg-stone-700 text-rose-400 hover:text-rose-300 border border-rose-500/30 text-xs font-bold transition-all cursor-pointer"
+                      >
+                        Reject Recommendation
+                      </button>
+
+                      <button
+                        onClick={() => openProvenance(selectedRec.title, `${selectedRec.compositeScore}/100`)}
+                        className="px-4 py-2 rounded-xl bg-stone-800 hover:bg-stone-700 text-stone-200 border border-stone-700 text-xs font-bold transition-all flex items-center justify-center gap-1 cursor-pointer"
+                      >
+                        <span>Inspect Provenance 🔍</span>
                       </button>
                     </div>
                   ) : (
-                    <div className="p-3.5 rounded-2xl bg-stone-100 border border-stone-200 text-stone-600 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2 shadow-2xs">
-                      <div className="flex items-center space-x-2">
-                        <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
-                        <span>Public Policy Transparency • Capital budget allocation is restricted to authorized District Collectors and Policy Planners.</span>
-                      </div>
-                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-white border border-stone-200 font-bold uppercase self-start sm:self-auto">
-                        Read-Only
-                      </span>
+                    <div className="p-3 rounded-xl bg-stone-950 border border-stone-800 text-stone-400 text-xs flex items-center justify-between">
+                      <span>Public Policy Transparency • Decisions require authenticated authority credentials.</span>
+                      <span className="text-[10px] font-mono font-bold text-amber-400">READ-ONLY</span>
                     </div>
                   )}
                 </div>
@@ -503,10 +572,13 @@ export default function PlanningPage() {
         </div>
       )}
 
-      {/* TAB 2: SCENARIOS */}
+      {/* TAB 2: SCENARIOS & BUDGET SIMULATOR */}
       {activeTab === 'scenarios' && (
-        <div className="space-y-6">
-          <ScenarioCompareSlider recommendations={filteredRecommendations} />
+        <div className="space-y-8">
+          <BudgetSimulator />
+          <div className="pt-6 border-t border-stone-200">
+            <ScenarioCompareSlider recommendations={filteredRecommendations} />
+          </div>
         </div>
       )}
 
@@ -550,6 +622,15 @@ export default function PlanningPage() {
           ))}
         </div>
       )}
+
+      {/* Reusable Data Provenance Modal */}
+      <DataProvenanceModal
+        isOpen={provenanceModalOpen}
+        onClose={() => setProvenanceModalOpen(false)}
+        provenance={activeProvenance}
+        metricName={selectedRec?.title}
+        metricValue={`${selectedRec?.compositeScore}/100`}
+      />
 
     </div>
   );
