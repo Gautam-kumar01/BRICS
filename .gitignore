@@ -36,3 +36,9 @@ yarn-error.log*
 
 # temporary images / screenshots
 *.png
+
+# presentations & generators (local only)
+*.pptx
+*.ppt
+generate_ppt.py
+presentation.html
