@@ -111,29 +111,57 @@ export default function HomePage() {
 
   const handleTrackSearch = async (e?: React.FormEvent, directCode?: string) => {
     if (e) e.preventDefault();
-    const code = (directCode || trackCodeInput).trim().toUpperCase();
-    if (!code) return;
+    const raw = (directCode || trackCodeInput).trim();
+    if (!raw) return;
 
+    const clean = raw.toLowerCase().replace(/[^a-z0-9]/g, '');
     setIsTrackingLoading(true);
     setTrackNotFound(false);
 
-    // Try finding in current live state first
-    const foundLocal = liveSubmissions.find(s => s.referenceCode.toUpperCase() === code);
+    // Try finding in current live state first with fuzzy matching
+    const foundLocal = liveSubmissions.find(s => {
+      const sRefClean = s.referenceCode.toLowerCase().replace(/[^a-z0-9]/g, '');
+      const sIdClean = s.id.toLowerCase().replace(/[^a-z0-9]/g, '');
+      return s.referenceCode.toLowerCase() === raw.toLowerCase() ||
+        s.id.toLowerCase() === raw.toLowerCase() ||
+        sRefClean === clean ||
+        sIdClean === clean ||
+        (clean.length >= 4 && sRefClean.endsWith(clean)) ||
+        s.referenceCode.toLowerCase().includes(raw.toLowerCase());
+    });
+
     if (foundLocal) {
       setTrackedSubmission(foundLocal);
       setTrackCodeInput(foundLocal.referenceCode);
       setIsTrackingLoading(false);
+      // Smooth scroll to tracker view
+      const trackerEl = document.getElementById('grievance-tracker-section');
+      if (trackerEl) trackerEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       return;
     }
 
     try {
-      const res = await fetch(`/api/submissions/${code}`);
+      const res = await fetch(`/api/submissions/${encodeURIComponent(raw)}`);
       if (res.ok) {
         const data = await res.json();
         setTrackedSubmission(data);
         setTrackCodeInput(data.referenceCode);
+        const trackerEl = document.getElementById('grievance-tracker-section');
+        if (trackerEl) trackerEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       } else {
-        setTrackNotFound(true);
+        // Fallback search in seed data
+        const seedMatch = SEED_SUBMISSIONS.find(s => {
+          const sRefClean = s.referenceCode.toLowerCase().replace(/[^a-z0-9]/g, '');
+          return s.referenceCode.toLowerCase() === raw.toLowerCase() ||
+            sRefClean === clean ||
+            (clean.length >= 4 && sRefClean.endsWith(clean));
+        });
+        if (seedMatch) {
+          setTrackedSubmission(seedMatch);
+          setTrackCodeInput(seedMatch.referenceCode);
+        } else {
+          setTrackNotFound(true);
+        }
       }
     } catch (err) {
       setTrackNotFound(true);
@@ -484,7 +512,7 @@ export default function HomePage() {
       {/* ==================================================================== */}
       {/* 2. 🔍 INSTANT GRIEVANCE TRACKER & LIVE STEPPER (NEW HOMEPAGE FEATURE) */}
       {/* ==================================================================== */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section id="grievance-tracker-section" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-20">
         <div className="rounded-3xl bg-gradient-to-br from-stone-950 via-[#26130B] to-stone-950 text-white p-6 sm:p-10 border-2 border-orange-500/40 shadow-2xl space-y-6">
 
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-orange-500/20 pb-6">
@@ -1459,6 +1487,43 @@ export default function HomePage() {
                 </div>
               )}
 
+            </div>
+
+            {/* 1-Click Instant Direct Mobile Triggers */}
+            <div className="p-4 rounded-2xl bg-orange-50 border-2 border-orange-200 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-stone-900 flex items-center space-x-1.5">
+                  <Smartphone className="w-4 h-4 text-orange-600" />
+                  <span>Instant Citizen Delivery Triggers (1-Click)</span>
+                </span>
+                <span className="text-[10px] font-mono font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded border border-emerald-300">
+                  Instant Link
+                </span>
+              </div>
+              <p className="text-[11px] text-stone-600 leading-relaxed font-medium">
+                Deliver the reference code, category, and tracking link directly to the citizen's device via phone SMS app or WhatsApp:
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                <a
+                  href={(submittedSandboxRecord as any)?.smsDispatch?.nativeSmsUrl || `sms:${submittedSandboxRecord.citizenConsent?.contactValue || ''}?body=${encodeURIComponent(`[CivicPulse] Grievance Registered: ${submittedSandboxRecord.referenceCode}. Track status: https://brics-civicpulse.vercel.app/citizen?track=${submittedSandboxRecord.referenceCode}`)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-4 py-2.5 rounded-xl bg-orange-600 hover:bg-orange-700 text-white text-xs font-bold transition-all shadow-sm flex items-center justify-center space-x-2"
+                >
+                  <Smartphone className="w-4 h-4" />
+                  <span>📲 Open in SMS App</span>
+                </a>
+
+                <a
+                  href={(submittedSandboxRecord as any)?.smsDispatch?.whatsAppUrl || `https://wa.me/${(submittedSandboxRecord.citizenConsent?.contactValue || '').replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`[CivicPulse] Grievance Registered: ${submittedSandboxRecord.referenceCode}. Track status: https://brics-civicpulse.vercel.app/citizen?track=${submittedSandboxRecord.referenceCode}`)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-all shadow-sm flex items-center justify-center space-x-2"
+                >
+                  <span className="text-sm">💬</span>
+                  <span>Share via WhatsApp</span>
+                </a>
+              </div>
             </div>
 
             {/* Action Buttons */}

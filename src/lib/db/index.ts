@@ -159,7 +159,42 @@ export async function getAllSubmissions(): Promise<CitizenSubmission[]> {
 }
 
 export async function getSubmissionByReference(refCode: string): Promise<CitizenSubmission | null> {
-  const match = globalStore.submissions.find(s => s.referenceCode.toLowerCase() === refCode.toLowerCase() || s.id === refCode);
+  if (!refCode) return null;
+  const raw = refCode.trim();
+  const cleanQuery = raw.toLowerCase().replace(/[^a-z0-9]/g, '');
+
+  // 1. Direct exact or lower-case matching
+  let match = globalStore.submissions.find(s => 
+    s.referenceCode.toLowerCase() === raw.toLowerCase() || 
+    s.id.toLowerCase() === raw.toLowerCase()
+  );
+
+  // 2. Clean alphanumeric matching (e.g. "cpin20268041" matches "CP-IN-2026-8041")
+  if (!match && cleanQuery.length >= 3) {
+    match = globalStore.submissions.find(s => {
+      const sRefClean = s.referenceCode.toLowerCase().replace(/[^a-z0-9]/g, '');
+      const sIdClean = s.id.toLowerCase().replace(/[^a-z0-9]/g, '');
+      return sRefClean === cleanQuery || sIdClean === cleanQuery;
+    });
+  }
+
+  // 3. Suffix or substring matching (e.g. "8041" or "4421" or "2026-8041")
+  if (!match && cleanQuery.length >= 4) {
+    match = globalStore.submissions.find(s => {
+      const sRefClean = s.referenceCode.toLowerCase().replace(/[^a-z0-9]/g, '');
+      return sRefClean.endsWith(cleanQuery) || s.referenceCode.toLowerCase().includes(raw.toLowerCase());
+    });
+  }
+
+  // 4. Fallback search in SEED_SUBMISSIONS directly in case store was altered
+  if (!match) {
+    match = SEED_SUBMISSIONS.find(s => 
+      s.referenceCode.toLowerCase() === raw.toLowerCase() ||
+      s.referenceCode.toLowerCase().replace(/[^a-z0-9]/g, '') === cleanQuery ||
+      (cleanQuery.length >= 4 && s.referenceCode.toLowerCase().replace(/[^a-z0-9]/g, '').endsWith(cleanQuery))
+    );
+  }
+
   return match || null;
 }
 

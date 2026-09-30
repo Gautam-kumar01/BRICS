@@ -15,6 +15,10 @@ export interface SMSDispatchResult {
   dispatchId?: string;
   note?: string;
   error?: string;
+  nativeSmsUrl?: string;
+  whatsAppUrl?: string;
+  formattedHindiReceipt?: string;
+  formattedEnglishReceipt?: string;
 }
 
 /**
@@ -89,10 +93,22 @@ export async function dispatchGrievanceSMS(params: {
   urgency: string;
   country?: string;
 }): Promise<SMSDispatchResult> {
-  const { to, referenceCode, subcategory, district, country = 'India' } = params;
+  const { to, referenceCode, category, subcategory, district, country = 'India' } = params;
 
   // Clean and format phone to strict E.164
   const e164Phone = normalizeToE164(to, country);
+  const plainDigits = e164Phone.replace(/\+/g, '');
+  const raw10Digits = e164Phone.slice(-10);
+
+  // Concise official SMS notification under 160 characters
+  const smsBody = `[CivicPulse] Grievance Registered: ${referenceCode}. Issue: ${subcategory} (${district}). Track status: https://brics-civicpulse.vercel.app/citizen?track=${referenceCode}`;
+  
+  const formattedHindiReceipt = `🏛️ सरकारी नागरिक सेवा सूचना (BRICS CivicPulse)\n✅ आपकी शिकायत सफलतापूर्वक दर्ज हो गई है!\n📋 संदर्भ कोड: ${referenceCode}\n🏷️ श्रेणी: ${category.toUpperCase()} (${subcategory})\n📍 स्थान: ${district}\n🔍 स्थिति ट्रैक करें: https://brics-civicpulse.vercel.app/citizen?track=${referenceCode}`;
+  const formattedEnglishReceipt = `🏛️ BRICS CivicPulse Official Receipt\n✅ Grievance Registered Successfully!\n📋 Ref Code: ${referenceCode}\n🏷️ Domain: ${category.toUpperCase()} (${subcategory})\n📍 Location: ${district}\n🔍 Track Live Status: https://brics-civicpulse.vercel.app/citizen?track=${referenceCode}`;
+
+  const nativeSmsUrl = `sms:${e164Phone || ''}?body=${encodeURIComponent(smsBody)}`;
+  const whatsAppUrl = `https://wa.me/${plainDigits}?text=${encodeURIComponent(smsBody)}`;
+
   if (!e164Phone || e164Phone.length < 9) {
     return {
       success: false,
@@ -102,11 +118,12 @@ export async function dispatchGrievanceSMS(params: {
       recipient: to,
       message: 'Invalid phone number format.',
       note: 'Please provide a valid 10-digit mobile number or full international format with country code (e.g., +919823456789).',
+      nativeSmsUrl,
+      whatsAppUrl,
+      formattedHindiReceipt,
+      formattedEnglishReceipt,
     };
   }
-
-  // Concise official SMS notification under 160 characters
-  const smsBody = `[CivicPulse] Grievance Registered: ${referenceCode}. Issue: ${subcategory} (${district}). Track status: https://brics-civicpulse.vercel.app/citizen?track=${referenceCode}`;
 
   // 1. Check for Fast2SMS Gateway (Prioritized for India Mobile Numbers)
   const fast2smsKey = (
@@ -119,7 +136,6 @@ export async function dispatchGrievanceSMS(params: {
 
   if (fast2smsKey) {
     try {
-      const raw10Digits = e164Phone.slice(-10);
       console.log(`[Fast2SMS Gateway] Attempting live SMS dispatch to Indian mobile: ${raw10Digits}...`);
 
       // Fast2SMS Quick SMS Route (route: 'q') — instant text delivery without strict DLT templates
@@ -153,10 +169,20 @@ export async function dispatchGrievanceSMS(params: {
           message: smsBody,
           dispatchId: requestId,
           note: `Live SMS successfully dispatched via Fast2SMS Indian Gateway to +91 ${raw10Digits} (Request ID: ${requestId}).`,
+          nativeSmsUrl,
+          whatsAppUrl,
+          formattedHindiReceipt,
+          formattedEnglishReceipt,
         };
       } else {
-        const errMsg = Array.isArray(fData.message) ? fData.message.join(', ') : (fData.message || fData.error || 'Fast2SMS dispatch rejected');
-        console.error('[Fast2SMS Error Response]', errMsg);
+        const rawMsg = Array.isArray(fData.message) ? fData.message.join(', ') : (fData.message || fData.error || 'Fast2SMS dispatch rejected');
+        const isRechargeRequired = fData.status_code === 999 || rawMsg.includes('100 INR') || rawMsg.includes('transaction of 100');
+        
+        const note = isRechargeRequired
+          ? `Fast2SMS Gateway Policy: Fast2SMS accounts require a 1-time ₹100 recharge at fast2sms.com/dashboard/add-wallet before carrier API dispatch is unlocked. In the meantime, use the 1-Click Instant SMS / WhatsApp buttons below to send the receipt directly!`
+          : `Fast2SMS Gateway Notice: ${rawMsg}.`;
+
+        console.warn('[Fast2SMS Notice]', note);
         return {
           success: false,
           simulated: true,
@@ -164,9 +190,13 @@ export async function dispatchGrievanceSMS(params: {
           referenceCode,
           recipient: e164Phone,
           message: smsBody,
-          dispatchId: `ERR-FAST2SMS-${fData.status_code || 'FAIL'}`,
-          error: errMsg,
-          note: `Fast2SMS Gateway Error: ${errMsg}. (Check your FAST2SMS_API_KEY and wallet balance at fast2sms.com).`,
+          dispatchId: `ERR-FAST2SMS-${fData.status_code || 'NOTICE'}`,
+          error: rawMsg,
+          note,
+          nativeSmsUrl,
+          whatsAppUrl,
+          formattedHindiReceipt,
+          formattedEnglishReceipt,
         };
       }
     } catch (err: any) {
@@ -179,7 +209,11 @@ export async function dispatchGrievanceSMS(params: {
         recipient: e164Phone,
         message: smsBody,
         error: err.message,
-        note: `Fast2SMS network connection error: ${err.message}. Defaulted to prototype simulation.`,
+        note: `Fast2SMS network connection notice: ${err.message}. Use 1-Click SMS/WhatsApp trigger below for direct transmission.`,
+        nativeSmsUrl,
+        whatsAppUrl,
+        formattedHindiReceipt,
+        formattedEnglishReceipt,
       };
     }
   }
@@ -223,6 +257,10 @@ export async function dispatchGrievanceSMS(params: {
           message: smsBody,
           dispatchId: twilioData.sid,
           note: `Live SMS successfully dispatched via Twilio to ${e164Phone} (SID: ${twilioData.sid}).`,
+          nativeSmsUrl,
+          whatsAppUrl,
+          formattedHindiReceipt,
+          formattedEnglishReceipt,
         };
       } else {
         console.error('[Twilio SMS Error]', twilioData);
@@ -236,6 +274,10 @@ export async function dispatchGrievanceSMS(params: {
           dispatchId: `ERR-TWILIO-${twilioData.code || 'FAIL'}`,
           error: twilioData.message || 'Twilio API request rejected',
           note: `Twilio API Response: ${twilioData.message || 'Failed to dispatch'}. (If using a free Twilio trial, ensure ${e164Phone} is added under 'Verified Caller IDs' in your Twilio Console).`,
+          nativeSmsUrl,
+          whatsAppUrl,
+          formattedHindiReceipt,
+          formattedEnglishReceipt,
         };
       }
     } catch (err: any) {
@@ -249,6 +291,10 @@ export async function dispatchGrievanceSMS(params: {
         message: smsBody,
         error: err.message,
         note: `Twilio network connection error: ${err.message}. Defaulted to prototype simulation.`,
+        nativeSmsUrl,
+        whatsAppUrl,
+        formattedHindiReceipt,
+        formattedEnglishReceipt,
       };
     }
   }
@@ -264,7 +310,11 @@ export async function dispatchGrievanceSMS(params: {
     recipient: e164Phone,
     message: smsBody,
     dispatchId: `SIM-SMS-${Date.now()}`,
-    note: 'Simulated Gateway Dispatch. To deliver real physical SMS to mobile phones in India, paste your FAST2SMS_API_KEY in .env.local or Vercel Environment Variables.',
+    note: 'Instant Receipt Generated. You can click "Open in SMS App" or "Share via WhatsApp" below to transmit directly to mobile.',
+    nativeSmsUrl,
+    whatsAppUrl,
+    formattedHindiReceipt,
+    formattedEnglishReceipt,
   };
 }
 

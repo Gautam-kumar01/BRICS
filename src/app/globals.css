@@ -20,47 +20,63 @@ html {
 body {
   color: #1c1917;
   background-color: #fbf7f0;
-  background-image: 
-    radial-gradient(at 0% 0%, rgba(254, 215, 170, 0.5) 0px, transparent 45%),
-    radial-gradient(at 100% 0%, rgba(253, 230, 138, 0.4) 0px, transparent 45%),
-    radial-gradient(at 50% 30%, rgba(255, 237, 213, 0.35) 0px, transparent 55%),
-    radial-gradient(at 100% 100%, rgba(254, 215, 170, 0.4) 0px, transparent 50%),
-    radial-gradient(at 0% 100%, rgba(253, 230, 138, 0.35) 0px, transparent 50%),
-    linear-gradient(to right, rgba(234, 88, 12, 0.04) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(234, 88, 12, 0.04) 1px, transparent 1px);
-  background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 36px 36px, 36px 36px;
-  background-attachment: fixed;
   min-height: 100vh;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   overflow-x: hidden;
   max-width: 100vw;
   width: 100%;
+  position: relative;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Crisp Warm Glassmorphism Panels */
+/* GPU-composited fixed background prevents expensive browser repaints on scroll */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image: 
+    radial-gradient(circle at 10% 10%, rgba(254, 215, 170, 0.45) 0%, transparent 40%),
+    radial-gradient(circle at 90% 10%, rgba(253, 230, 138, 0.35) 0%, transparent 40%),
+    radial-gradient(circle at 50% 35%, rgba(255, 237, 213, 0.3) 0%, transparent 50%),
+    radial-gradient(circle at 85% 85%, rgba(254, 215, 170, 0.35) 0%, transparent 45%),
+    radial-gradient(circle at 15% 85%, rgba(253, 230, 138, 0.3) 0%, transparent 45%),
+    linear-gradient(to right, rgba(234, 88, 12, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(234, 88, 12, 0.03) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 36px 36px, 36px 36px;
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+/* Crisp Warm Glassmorphism Panels with Optimized GPU Blurs */
 .glass-panel {
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(234, 215, 195, 0.85);
   box-shadow: 0 4px 20px -2px rgba(120, 53, 15, 0.04), 0 2px 8px -1px rgba(120, 53, 15, 0.02);
+  transform: translateZ(0);
 }
 
 .glass-panel-hover {
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform, box-shadow;
 }
 
 .glass-panel-hover:hover {
   background: #ffffff;
   border-color: rgba(249, 115, 22, 0.5);
-  box-shadow: 0 12px 35px -4px rgba(249, 115, 22, 0.15), 0 4px 12px -2px rgba(120, 53, 15, 0.05);
-  transform: translateY(-2px);
+  box-shadow: 0 12px 30px -4px rgba(249, 115, 22, 0.14), 0 4px 10px -2px rgba(120, 53, 15, 0.04);
+  transform: translateY(-2px) translateZ(0);
 }
 
 .glass-card-accent {
-  background: linear-gradient(135deg, rgba(255, 247, 237, 0.98) 0%, rgba(255, 255, 255, 0.95) 100%);
+  background: linear-gradient(135deg, rgba(255, 247, 237, 0.98) 0%, rgba(255, 255, 255, 0.96) 100%);
   border: 1px solid rgba(254, 215, 170, 0.95);
   box-shadow: 0 4px 24px -2px rgba(249, 115, 22, 0.08);
+  transform: translateZ(0);
 }
 
 /* Radiant High-Contrast Typography Gradients */

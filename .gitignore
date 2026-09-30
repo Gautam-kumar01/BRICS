@@ -37,10 +37,13 @@ yarn-error.log*
 # temporary images / screenshots
 *.png
 
-# presentations & generators (local only)
+# local presentations & recording scripts (kept local as requested)
 *.pptx
-*.ppt
-generate_ppt.py
-presentation.html
+*.pdf
+*.html
+test_*.js
+VIDEO_RECORDING_SCRIPT.md
+public/BRICS_CivicPulse_Presentation_CodeAlpha.*
+public/presentation.html
 
 

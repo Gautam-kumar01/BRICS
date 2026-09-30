@@ -250,22 +250,58 @@ export default function CitizenPage() {
   };
 
   const handleTrackLookup = async (codeToSearch?: string) => {
-    const code = (codeToSearch || trackRef).trim();
-    if (!code) return;
+    const raw = (codeToSearch || trackRef).trim();
+    if (!raw) return;
 
-    setTrackRef(code);
+    const clean = raw.toLowerCase().replace(/[^a-z0-9]/g, '');
+    setTrackRef(raw);
     setTrackLoading(true);
     setTrackError(null);
     setTrackedSubmission(null);
     setFeedbackSubmitted(false);
 
+    // 1. Try finding in current local feed first with fuzzy matching
+    const localMatch = recentSubmissions.find(s => {
+      const sRefClean = s.referenceCode.toLowerCase().replace(/[^a-z0-9]/g, '');
+      const sIdClean = s.id.toLowerCase().replace(/[^a-z0-9]/g, '');
+      return s.referenceCode.toLowerCase() === raw.toLowerCase() ||
+        s.id.toLowerCase() === raw.toLowerCase() ||
+        sRefClean === clean ||
+        sIdClean === clean ||
+        (clean.length >= 4 && sRefClean.endsWith(clean)) ||
+        s.referenceCode.toLowerCase().includes(raw.toLowerCase());
+    });
+
+    if (localMatch) {
+      setTrackedSubmission(localMatch);
+      setTrackRef(localMatch.referenceCode);
+      setTrackLoading(false);
+      return;
+    }
+
     try {
-      const res = await fetch(`/api/submissions/${encodeURIComponent(code)}`);
-      if (!res.ok) throw new Error('Reference code not found in active registry');
-      const data: CitizenSubmission = await res.json();
-      setTrackedSubmission(data);
+      const res = await fetch(`/api/submissions/${encodeURIComponent(raw)}`);
+      if (res.ok) {
+        const data: CitizenSubmission = await res.json();
+        setTrackedSubmission(data);
+        setTrackRef(data.referenceCode);
+      } else {
+        // Fallback search in SEED_SUBMISSIONS
+        const seedMatch = SEED_SUBMISSIONS.find(s => {
+          const sRefClean = s.referenceCode.toLowerCase().replace(/[^a-z0-9]/g, '');
+          return s.referenceCode.toLowerCase() === raw.toLowerCase() ||
+            sRefClean === clean ||
+            (clean.length >= 4 && sRefClean.endsWith(clean));
+        });
+        if (seedMatch) {
+          setTrackedSubmission(seedMatch);
+          setTrackRef(seedMatch.referenceCode);
+        } else {
+          setTrackError('Reference code not found in active registry. Please check your reference code or try CP-IN-2026-4421.');
+        }
+      }
     } catch (err: any) {
-      setTrackError(err.message || 'Unable to locate submission');
+      setTrackError(err.message || 'Unable to locate submission in registry');
     } finally {
       setTrackLoading(false);
     }
@@ -1425,11 +1461,48 @@ export default function CitizenPage() {
 
             </div>
 
+            {/* 1-Click Instant Direct Mobile Triggers */}
+            <div className="p-4 rounded-2xl bg-orange-50 border-2 border-orange-200 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-stone-900 flex items-center space-x-1.5">
+                  <Smartphone className="w-4 h-4 text-orange-600" />
+                  <span>Instant Citizen Delivery Triggers (1-Click)</span>
+                </span>
+                <span className="text-[10px] font-mono font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded border border-emerald-300">
+                  Instant Link
+                </span>
+              </div>
+              <p className="text-[11px] text-stone-600 leading-relaxed font-medium">
+                Deliver the reference code, category, and tracking link directly to the citizen's device via phone SMS app or WhatsApp:
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                <a
+                  href={(submittedRecord as any)?.smsDispatch?.nativeSmsUrl || `sms:${submittedRecord.citizenConsent?.contactValue || contactValue || ''}?body=${encodeURIComponent(`[CivicPulse] Grievance Registered: ${submittedRecord.referenceCode}. Track status: https://brics-civicpulse.vercel.app/citizen?track=${submittedRecord.referenceCode}`)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-4 py-2.5 rounded-xl bg-orange-600 hover:bg-orange-700 text-white text-xs font-bold transition-all shadow-sm flex items-center justify-center space-x-2"
+                >
+                  <Smartphone className="w-4 h-4" />
+                  <span>📲 Open in SMS App</span>
+                </a>
+
+                <a
+                  href={(submittedRecord as any)?.smsDispatch?.whatsAppUrl || `https://wa.me/${(submittedRecord.citizenConsent?.contactValue || contactValue || '').replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`[CivicPulse] Grievance Registered: ${submittedRecord.referenceCode}. Track status: https://brics-civicpulse.vercel.app/citizen?track=${submittedRecord.referenceCode}`)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-all shadow-sm flex items-center justify-center space-x-2"
+                >
+                  <span className="text-sm">💬</span>
+                  <span>Share via WhatsApp</span>
+                </a>
+              </div>
+            </div>
+
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
               <button
                 onClick={() => copyToClipboard(submittedRecord.referenceCode)}
-                className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-bold transition-all flex items-center justify-center space-x-1.5 border border-stone-300"
+                className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-bold transition-all flex items-center justify-center space-x-1.5 border border-stone-300 cursor-pointer"
               >
                 {copiedCode === submittedRecord.referenceCode ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
                 <span>{copiedCode === submittedRecord.referenceCode ? 'Copied Reference Code!' : 'Copy Reference Code'}</span>
@@ -1442,7 +1515,7 @@ export default function CitizenPage() {
                   setActiveTab('track');
                   handleTrackLookup(submittedRecord.referenceCode);
                 }}
-                className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white text-xs font-extrabold shadow-md shadow-orange-500/25 transition-all flex items-center justify-center space-x-2 active:scale-95"
+                className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white text-xs font-extrabold shadow-md shadow-orange-500/25 transition-all flex items-center justify-center space-x-2 active:scale-95 cursor-pointer"
               >
                 <span>Track Live Progress in Stepper (1-Click)</span>
                 <ArrowRight className="w-4 h-4" />
