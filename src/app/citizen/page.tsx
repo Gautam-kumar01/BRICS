@@ -1405,9 +1405,15 @@ export default function CitizenPage() {
                 <span>Recipient Mobile:</span>
                 <span className="text-orange-950 font-extrabold">{submittedRecord?.citizenConsent?.contactValue || contactValue || 'Cellular Number'}</span>
               </span>
-              <span className="text-[10px] px-2 py-0.5 rounded-md bg-white border border-orange-300 text-orange-800">
-                {(submittedRecord as any)?.smsDispatch?.provider === 'twilio' ? '📱 Live Twilio Gateway' :
-                 (submittedRecord as any)?.smsDispatch?.provider === 'fast2sms' ? '📱 Live Fast2SMS Gateway' :
+              <span className={`text-[10px] px-2 py-0.5 rounded-md border font-bold ${
+                (submittedRecord as any)?.smsDispatch?.provider === 'fast2sms' && !(submittedRecord as any)?.smsDispatch?.simulated
+                  ? 'bg-emerald-100 border-emerald-400 text-emerald-900'
+                  : (submittedRecord as any)?.smsDispatch?.provider === 'twilio' && !(submittedRecord as any)?.smsDispatch?.simulated
+                  ? 'bg-blue-100 border-blue-400 text-blue-900'
+                  : 'bg-white border-orange-300 text-orange-800'
+              }`}>
+                {(submittedRecord as any)?.smsDispatch?.provider === 'fast2sms' ? '📱 Live Fast2SMS Gateway' :
+                 (submittedRecord as any)?.smsDispatch?.provider === 'twilio' ? '📱 Live Twilio Gateway' :
                  '🔔 Instant SMS Simulation'}
               </span>
             </div>

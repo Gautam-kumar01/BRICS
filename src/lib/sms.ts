@@ -108,7 +108,83 @@ export async function dispatchGrievanceSMS(params: {
   // Concise official SMS notification under 160 characters
   const smsBody = `[CivicPulse] Grievance Registered: ${referenceCode}. Issue: ${subcategory} (${district}). Track status: https://brics-civicpulse.vercel.app/citizen?track=${referenceCode}`;
 
-  // 1. Check for Twilio Credentials in Environment (supports standard & common aliases)
+  // 1. Check for Fast2SMS Gateway (Prioritized for India Mobile Numbers)
+  const fast2smsKey = (
+    process.env.FAST2SMS_API_KEY ||
+    process.env.FAST2SMS_KEY ||
+    process.env.FAST2SMS_TOKEN ||
+    process.env.FAST2SMS_SECRET ||
+    ''
+  ).trim();
+
+  if (fast2smsKey) {
+    try {
+      const raw10Digits = e164Phone.slice(-10);
+      console.log(`[Fast2SMS Gateway] Attempting live SMS dispatch to Indian mobile: ${raw10Digits}...`);
+
+      // Fast2SMS Quick SMS Route (route: 'q') — instant text delivery without strict DLT templates
+      const fRes = await fetch('https://www.fast2sms.com/dev/bulkV2', {
+        method: 'POST',
+        headers: {
+          authorization: fast2smsKey,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          route: 'q',
+          message: smsBody,
+          language: 'english',
+          flash: 0,
+          numbers: raw10Digits,
+        }),
+      });
+
+      const fData = await fRes.json();
+      console.log('[Fast2SMS API Response]', fData);
+
+      if (fRes.ok && (fData.return === true || fData.status_code === 200)) {
+        const requestId = fData.request_id || (Array.isArray(fData.message) ? fData.message[0] : 'Delivered');
+        console.log(`[Fast2SMS Success] Request ID: ${requestId} sent to ${raw10Digits}`);
+        return {
+          success: true,
+          simulated: false,
+          provider: 'fast2sms',
+          referenceCode,
+          recipient: e164Phone,
+          message: smsBody,
+          dispatchId: requestId,
+          note: `Live SMS successfully dispatched via Fast2SMS Indian Gateway to +91 ${raw10Digits} (Request ID: ${requestId}).`,
+        };
+      } else {
+        const errMsg = Array.isArray(fData.message) ? fData.message.join(', ') : (fData.message || fData.error || 'Fast2SMS dispatch rejected');
+        console.error('[Fast2SMS Error Response]', errMsg);
+        return {
+          success: false,
+          simulated: true,
+          provider: 'fast2sms',
+          referenceCode,
+          recipient: e164Phone,
+          message: smsBody,
+          dispatchId: `ERR-FAST2SMS-${fData.status_code || 'FAIL'}`,
+          error: errMsg,
+          note: `Fast2SMS Gateway Error: ${errMsg}. (Check your FAST2SMS_API_KEY and wallet balance at fast2sms.com).`,
+        };
+      }
+    } catch (err: any) {
+      console.error('[Fast2SMS Network Error]', err.message);
+      return {
+        success: false,
+        simulated: true,
+        provider: 'fast2sms',
+        referenceCode,
+        recipient: e164Phone,
+        message: smsBody,
+        error: err.message,
+        note: `Fast2SMS network connection error: ${err.message}. Defaulted to prototype simulation.`,
+      };
+    }
+  }
+
+  // 2. Check for Twilio Gateway (Secondary / International)
   const twilioSid = (process.env.TWILIO_ACCOUNT_SID || process.env.TWILIO_SID || '').trim();
   const twilioToken = (process.env.TWILIO_AUTH_TOKEN || process.env.TWILIO_TOKEN || '').trim();
   const twilioFrom = (process.env.TWILIO_PHONE_NUMBER || process.env.TWILIO_FROM || process.env.TWILIO_NUMBER || '').trim();
@@ -177,49 +253,7 @@ export async function dispatchGrievanceSMS(params: {
     }
   }
 
-  // 2. Check for Fast2SMS (India Quick Route)
-  const fast2smsKey = process.env.FAST2SMS_API_KEY?.trim();
-  if (fast2smsKey) {
-    try {
-      const raw10Digits = e164Phone.slice(-10);
-      if (raw10Digits.length === 10) {
-        const fRes = await fetch('https://www.fast2sms.com/dev/bulkV2', {
-          method: 'POST',
-          headers: {
-            authorization: fast2smsKey,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            route: 'v3',
-            sender_id: 'CVPULS',
-            message: smsBody,
-            language: 'english',
-            flash: 0,
-            numbers: raw10Digits,
-          }),
-        });
-
-        const fData = await fRes.json();
-        if (fRes.ok && fData.return) {
-          console.log(`[Fast2SMS Success] Request ID: ${fData.request_id} sent to ${raw10Digits}`);
-          return {
-            success: true,
-            simulated: false,
-            provider: 'fast2sms',
-            referenceCode,
-            recipient: e164Phone,
-            message: smsBody,
-            dispatchId: fData.request_id,
-            note: `Live SMS delivered via Fast2SMS Indian Telecom Gateway to ${e164Phone}.`,
-          };
-        }
-      }
-    } catch (err: any) {
-      console.error('[Fast2SMS Error]', err.message);
-    }
-  }
-
-  // 3. High-Fidelity Prototype Simulation
+  // 3. High-Fidelity Prototype Simulation Fallback
   console.log(`[SMS Gateway Simulated Dispatch] To: ${e164Phone} | Ref: ${referenceCode} | Body: ${smsBody}`);
 
   return {
@@ -230,7 +264,7 @@ export async function dispatchGrievanceSMS(params: {
     recipient: e164Phone,
     message: smsBody,
     dispatchId: `SIM-SMS-${Date.now()}`,
-    note: 'Simulated Gateway Dispatch. To deliver real physical SMS to mobile phones, add TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN & TWILIO_PHONE_NUMBER in .env.local or Vercel settings.',
+    note: 'Simulated Gateway Dispatch. To deliver real physical SMS to mobile phones in India, paste your FAST2SMS_API_KEY in .env.local or Vercel Environment Variables.',
   };
 }
 
