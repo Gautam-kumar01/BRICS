@@ -117,6 +117,17 @@ export interface CitizenSubmission {
   provenance?: DataProvenanceInfo;
   dataProvenance?: DataProvenanceInfo;
   dataStatus?: DataStatusType;
+  smsDispatch?: {
+    success: boolean;
+    simulated: boolean;
+    provider: 'twilio' | 'fast2sms' | 'simulation';
+    referenceCode: string;
+    recipient: string;
+    message: string;
+    dispatchId?: string;
+    note?: string;
+    error?: string;
+  };
 }
 
 export interface DemandCluster {

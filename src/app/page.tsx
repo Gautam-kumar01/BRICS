@@ -1220,14 +1220,40 @@ export default function HomePage() {
               </button>
             </div>
 
-            {/* Recipient Badge */}
-            <div className="flex items-center justify-between p-3 rounded-2xl bg-orange-50 border border-orange-200 text-xs font-mono font-bold">
+            {/* Recipient Badge & Live Carrier Status */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 rounded-2xl bg-orange-50 border border-orange-200 text-xs font-mono font-bold">
               <span className="text-stone-700 flex items-center space-x-1.5">
                 <Phone className="w-3.5 h-3.5 text-orange-600" />
                 <span>Recipient Mobile:</span>
+                <span className="text-orange-950 font-extrabold">{submittedSandboxRecord.citizenConsent?.contactValue || sandboxPhone || 'Cellular Number'}</span>
               </span>
-              <span className="text-orange-950 font-extrabold">{sandboxPhone || '+91 98234 56789'}</span>
+              <span className="text-[10px] px-2 py-0.5 rounded-md bg-white border border-orange-300 text-orange-800">
+                {(submittedSandboxRecord as any)?.smsDispatch?.provider === 'twilio' ? '📱 Live Twilio Gateway' :
+                 (submittedSandboxRecord as any)?.smsDispatch?.provider === 'fast2sms' ? '📱 Live Fast2SMS Gateway' :
+                 '🔔 Instant SMS Simulation'}
+              </span>
             </div>
+
+            {/* Carrier Status Note if available */}
+            {(submittedSandboxRecord as any)?.smsDispatch?.note && (
+              <div className={`p-3 rounded-2xl text-[11px] font-mono leading-relaxed border ${
+                (submittedSandboxRecord as any).smsDispatch.success && !(submittedSandboxRecord as any).smsDispatch.simulated
+                  ? 'bg-emerald-50 text-emerald-900 border-emerald-300'
+                  : (submittedSandboxRecord as any).smsDispatch.error
+                  ? 'bg-amber-50 text-amber-900 border-amber-300'
+                  : 'bg-stone-50 text-stone-700 border-stone-200'
+              }`}>
+                <div className="flex items-start space-x-2">
+                  <span className="text-sm">
+                    {(submittedSandboxRecord as any).smsDispatch.success && !(submittedSandboxRecord as any).smsDispatch.simulated ? '✅' : 'ℹ️'}
+                  </span>
+                  <div>
+                    <span className="font-bold">Carrier Dispatch Info: </span>
+                    <span>{(submittedSandboxRecord as any).smsDispatch.note}</span>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Language Tabs for SMS Preview */}
             <div className="flex items-center space-x-1.5 border-b border-stone-200 pb-2 text-xs font-bold">

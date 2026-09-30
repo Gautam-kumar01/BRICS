@@ -16,23 +16,28 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const created = await createSubmission(body);
 
+    let smsResult = null;
     // Trigger SMS dispatch if phone number is provided
     const phone = created.citizenConsent?.contactValue;
     if (phone && phone.trim().length >= 8) {
-      // Fire SMS dispatch asynchronously
-      dispatchGrievanceSMS({
+      smsResult = await dispatchGrievanceSMS({
         to: phone,
         referenceCode: created.referenceCode,
         category: created.category,
         subcategory: created.subcategory,
         district: created.location.district,
         urgency: created.urgency,
-      }).catch((err) => console.warn('Background SMS Dispatch Warning:', err));
+        country: created.location.country,
+      });
     }
 
-    return NextResponse.json(created, { status: 201 });
+    return NextResponse.json({
+      ...created,
+      smsDispatch: smsResult,
+    }, { status: 201 });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
+
 
