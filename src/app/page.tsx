@@ -44,6 +44,8 @@ import { useLanguage } from '@/context/LanguageContext';
 import PrototypeDisclosure from '@/components/PrototypeDisclosure';
 import AIPipelineVisualizer from '@/components/AIPipelineVisualizer';
 import DataStatusBadge from '@/components/DataStatusBadge';
+import WhatsAppUSSDSimulator from '@/components/WhatsAppUSSDSimulator';
+import AIPolicyLensSimulator from '@/components/AIPolicyLensSimulator';
 
 export default function HomePage() {
   const router = useRouter();
@@ -52,6 +54,9 @@ export default function HomePage() {
   const [demoResult, setDemoResult] = useState<any>(null);
   const [liveSubmissions, setLiveSubmissions] = useState<CitizenSubmission[]>(SEED_SUBMISSIONS);
   const [searchQuery, setSearchQuery] = useState('');
+
+  // 🎮 INTERACTIVE SIMULATOR SHOWCASE STATE
+  const [activeSimulatorTab, setActiveSimulatorTab] = useState<'whatsapp_ussd' | 'policy_lens'>('whatsapp_ussd');
 
   // Homepage Direct Complaint Submission State
   const [sandboxText, setSandboxText] = useState('');
@@ -1001,6 +1006,95 @@ export default function HomePage() {
                 </Link>
               </div>
             </form>
+          </div>
+
+        </div>
+      </section>
+
+      {/* ==================================================================== */}
+      {/* 4.5. 🎮 INTERACTIVE PROTOTYPE SIMULATORS (WhatsApp/USSD & Policy Lens)*/}
+      {/* ==================================================================== */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+        <div className="p-6 sm:p-10 rounded-3xl bg-gradient-to-br from-[#26160f] via-[#362116] to-[#1e110b] text-stone-100 border-2 border-orange-500/30 shadow-2xl space-y-8">
+          
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-orange-500/20 pb-6">
+            <div className="space-y-1">
+              <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-orange-950/90 text-orange-300 text-xs font-mono font-bold border border-orange-500/40">
+                <Sparkles className="w-3.5 h-3.5 text-orange-400" />
+                <span>Interactive DPI Innovation Simulators</span>
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-display font-extrabold text-white">
+                Experience the Core Engines in Action
+              </h2>
+              <p className="text-xs text-stone-300 font-sans max-w-2xl">
+                Test low-connectivity offline citizen intake via WhatsApp AI Bot / 2G USSD (*99*24#) or simulate real-time capital allocation Multi-Criteria Decision Analysis (MCDA) with dynamic policy weightings.
+              </p>
+            </div>
+
+            {/* Simulator Mode Selector */}
+            <div className="flex items-center p-1.5 rounded-2xl bg-black/40 border border-orange-500/30 self-start md:self-auto gap-1">
+              <button
+                onClick={() => setActiveSimulatorTab('whatsapp_ussd')}
+                className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center space-x-2 cursor-pointer ${
+                  activeSimulatorTab === 'whatsapp_ussd'
+                    ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-md'
+                    : 'text-stone-300 hover:text-white hover:bg-white/5'
+                }`}
+              >
+                <Smartphone className="w-4 h-4" />
+                <span>WhatsApp & 2G USSD Bot</span>
+              </button>
+
+              <button
+                onClick={() => setActiveSimulatorTab('policy_lens')}
+                className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center space-x-2 cursor-pointer ${
+                  activeSimulatorTab === 'policy_lens'
+                    ? 'bg-gradient-to-r from-orange-500 to-amber-600 text-white shadow-md'
+                    : 'text-stone-300 hover:text-white hover:bg-white/5'
+                }`}
+              >
+                <SlidersHorizontal className="w-4 h-4" />
+                <span>AI Policy Lens (MCDA Engine)</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Active Simulator Body */}
+          <div className="animate-in fade-in zoom-in-95 duration-200">
+            {activeSimulatorTab === 'whatsapp_ussd' ? (
+              <div className="space-y-4">
+                <WhatsAppUSSDSimulator />
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <AIPolicyLensSimulator />
+              </div>
+            )}
+          </div>
+
+          {/* Direct Navigation Footer */}
+          <div className="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-orange-500/20 text-xs text-stone-300">
+            <span className="flex items-center space-x-1.5 font-mono text-[11px] text-orange-300">
+              <ShieldCheck className="w-4 h-4 text-emerald-400" />
+              <span>Full compliance with Digital Public Goods (DPG) and BRICS DPI specifications.</span>
+            </span>
+            <div className="flex items-center space-x-3">
+              <Link
+                href="/citizen"
+                className="font-bold text-orange-400 hover:text-orange-300 underline flex items-center space-x-1"
+              >
+                <span>Open Citizen Intake Portal</span>
+                <ChevronRight className="w-3.5 h-3.5" />
+              </Link>
+              <span className="text-stone-600">•</span>
+              <Link
+                href="/planning"
+                className="font-bold text-amber-400 hover:text-amber-300 underline flex items-center space-x-1"
+              >
+                <span>Open Policy Planning Desk</span>
+                <ChevronRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
           </div>
 
         </div>

@@ -7,6 +7,7 @@ import PrototypeDisclosure from '@/components/PrototypeDisclosure';
 import { DATASET_REGISTRY, BRICS_COUNTRIES_CONFIG } from '@/data/seed-data';
 import { DataProvenanceInfo } from '@/types';
 import Link from 'next/link';
+import OpenApiPlayground from '@/components/OpenApiPlayground';
 
 export default function DataIntelligencePage() {
   const [selectedDataset, setSelectedDataset] = useState<any>(DATASET_REGISTRY[0]);
@@ -232,6 +233,9 @@ export default function DataIntelligencePage() {
             ))}
           </div>
         </div>
+
+        {/* Digital Public Good (DPG) Open Data & API Playground */}
+        <OpenApiPlayground />
 
         {/* BRICS 11-Member Data Availability Matrix */}
         <div className="p-6 rounded-3xl bg-white border-2 border-stone-200/90 shadow-lg space-y-4">

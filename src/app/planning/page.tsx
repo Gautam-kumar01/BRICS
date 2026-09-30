@@ -27,6 +27,7 @@ import MapComponent from '@/components/MapComponent';
 import ScoreBreakdownBar from '@/components/ScoreBreakdownBar';
 import ScenarioCompareSlider from '@/components/ScenarioCompareSlider';
 import BudgetSimulator from '@/components/BudgetSimulator';
+import AIPolicyLensSimulator from '@/components/AIPolicyLensSimulator';
 import DataStatusBadge from '@/components/DataStatusBadge';
 import DataProvenanceModal from '@/components/DataProvenanceModal';
 import PrototypeDisclosure from '@/components/PrototypeDisclosure';
@@ -42,7 +43,7 @@ export default function PlanningPage() {
   const [indicators, setIndicators] = useState<InfrastructureIndicator[]>(SEED_INDICATORS);
   const [selectedRec, setSelectedRec] = useState<CandidateRecommendation | null>(SEED_RECOMMENDATIONS[0]);
   const [whyDrawerOpen, setWhyDrawerOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<'ranking' | 'scenarios' | 'indicators' | 'map'>('ranking');
+  const [activeTab, setActiveTab] = useState<'ranking' | 'policy-lens' | 'scenarios' | 'indicators' | 'map'>('ranking');
   const [isExporting, setIsExporting] = useState(false);
   const [selectedDistrictScope, setSelectedDistrictScope] = useState<string>('all');
   const [provenanceModalOpen, setProvenanceModalOpen] = useState(false);
@@ -244,6 +245,15 @@ export default function PlanningPage() {
           }`}
         >
           Candidate Recommendations (FR-08)
+        </button>
+        <button
+          onClick={() => setActiveTab('policy-lens')}
+          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex items-center space-x-1.5 ${
+            activeTab === 'policy-lens' ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-sm' : 'text-stone-600 hover:text-stone-950'
+          }`}
+        >
+          <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+          <span>AI Policy Lens & ROI Engine</span>
         </button>
         <button
           onClick={() => setActiveTab('scenarios')}
@@ -575,10 +585,20 @@ export default function PlanningPage() {
         </div>
       )}
 
-      {/* TAB 2: SCENARIOS & BUDGET SIMULATOR */}
+      {/* TAB 2: AI POLICY LENS SIMULATOR (MCDA) */}
+      {activeTab === 'policy-lens' && (
+        <div className="space-y-6">
+          <AIPolicyLensSimulator />
+        </div>
+      )}
+
+      {/* TAB 3: SCENARIOS & BUDGET SIMULATOR */}
       {activeTab === 'scenarios' && (
         <div className="space-y-8">
-          <BudgetSimulator />
+          <AIPolicyLensSimulator />
+          <div className="pt-6 border-t border-stone-200">
+            <BudgetSimulator />
+          </div>
           <div className="pt-6 border-t border-stone-200">
             <ScenarioCompareSlider recommendations={filteredRecommendations} />
           </div>

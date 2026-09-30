@@ -42,6 +42,7 @@ import { AIExtractionResult } from '@/lib/ai/ai-gateway';
 import { SEED_SUBMISSIONS } from '@/data/seed-data';
 import DataStatusBadge from '@/components/DataStatusBadge';
 import PrototypeDisclosure from '@/components/PrototypeDisclosure';
+import WhatsAppUSSDSimulator from '@/components/WhatsAppUSSDSimulator';
 
 export default function CitizenPage() {
   const [activeTab, setActiveTab] = useState<'submit' | 'track' | 'whatsapp' | 'ussd'>('submit');
@@ -1234,135 +1235,11 @@ export default function CitizenPage() {
       )}
 
       {/* ==================================================================== */}
-      {/* TAB 3: WHATSAPP SIMULATION                                           */}
+      {/* TAB 3 & 4: WHATSAPP & 2G USSD SIMULATOR STUDIO                       */}
       {/* ==================================================================== */}
-      {activeTab === 'whatsapp' && (
-        <div className="max-w-2xl mx-auto rounded-3xl bg-white border-2 border-orange-200 shadow-md p-6 sm:p-7 space-y-4">
-          <div className="flex items-center justify-between border-b border-stone-200 pb-4">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold shadow-md shadow-emerald-600/20">
-                <MessageSquare className="w-5 h-5" />
-              </div>
-              <div>
-                <h3 className="font-display font-extrabold text-sm text-stone-900 flex items-center space-x-2">
-                  <span>BRICS CivicPulse WhatsApp Bot</span>
-                  <span className="bg-emerald-100 text-emerald-800 text-[10px] font-mono px-2 py-0.5 rounded-full border border-emerald-300 font-bold">
-                    GovTech Verified
-                  </span>
-                </h3>
-                <p className="text-[11px] text-emerald-700 font-semibold flex items-center space-x-1.5 mt-0.5">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                  <span>AI Citizen Support • Powered by Multilingual DPI Gateway</span>
-                </p>
-              </div>
-            </div>
-
-            <button
-              onClick={() => setWaMessages([
-                { sender: 'bot', text: '👋 Welcome to BRICS CivicPulse Official Citizen Bot. Please tell us your infrastructure issue or send a voice note.' }
-              ])}
-              className="text-[11px] font-bold text-stone-500 hover:text-stone-800 bg-stone-100 hover:bg-stone-200 px-2.5 py-1 rounded-lg transition-colors"
-              title="Clear chat history"
-            >
-              Reset Chat
-            </button>
-          </div>
-
-          {/* Chat Bubble Feed */}
-          <div className="h-96 overflow-y-auto bg-[#f6f2ec] rounded-2xl p-4 sm:p-5 space-y-3.5 text-xs shadow-inner border border-stone-200">
-            {waMessages.map((msg, i) => (
-              <div
-                key={i}
-                className={`max-w-[88%] p-3.5 rounded-2xl leading-relaxed ${
-                  msg.sender === 'bot'
-                    ? 'bg-white text-stone-900 shadow-sm mr-auto border border-stone-200'
-                    : 'bg-emerald-700 text-white shadow-sm ml-auto font-medium'
-                }`}
-              >
-                {renderFormattedMessage(msg.text)}
-              </div>
-            ))}
-
-            {isWaTyping && (
-              <div className="max-w-[85%] p-3 rounded-2xl bg-white text-stone-500 shadow-sm mr-auto border border-stone-200 flex items-center space-x-2 animate-pulse">
-                <Sparkles className="w-3.5 h-3.5 text-emerald-600 animate-spin" />
-                <span className="text-[11px] font-bold">CivicPulse AI is typing...</span>
-              </div>
-            )}
-          </div>
-
-          {/* Quick Scenario Recommendation Chips */}
-          <div className="flex flex-wrap items-center gap-1.5 pt-1">
-            <span className="text-[10px] font-mono uppercase tracking-wider text-stone-500 font-bold mr-1">Quick prompts:</span>
-            {[
-              '👋 Hello!',
-              '🚰 Water pipeline leaking PIN 424001',
-              '🛣️ Broken road & potholes near market',
-              '🔍 Track CP-IN-2026-8491',
-              '🔒 Is my location private?'
-            ].map((chip) => (
-              <button
-                key={chip}
-                onClick={() => handleWaSend(chip.replace(/^[^\s]+\s/, ''))}
-                className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-orange-50 hover:bg-orange-100 text-orange-950 border border-orange-200 shadow-2xs transition-all active:scale-95"
-              >
-                {chip}
-              </button>
-            ))}
-          </div>
-
-          {/* Input Bar */}
-          <div className="flex items-center space-x-2 pt-1">
-            <input
-              type="text"
-              value={waInput}
-              onChange={(e) => setWaInput(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleWaSend()}
-              placeholder="Type your message, issue or reference code (e.g. CP-IN-2026-8491)..."
-              disabled={isWaTyping}
-              className="w-full px-4 py-2.5 rounded-xl bg-white border-2 border-orange-200 text-xs text-stone-900 font-medium focus:outline-none focus:border-orange-500 shadow-2xs font-sans"
-            />
-            <button
-              onClick={() => handleWaSend()}
-              disabled={isWaTyping || !waInput.trim()}
-              className={`p-2.5 rounded-xl font-bold shrink-0 transition-all ${
-                isWaTyping || !waInput.trim()
-                  ? 'bg-stone-300 text-stone-500 cursor-not-allowed'
-                  : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-md shadow-emerald-600/20 active:scale-95'
-              }`}
-            >
-              <Send className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* ==================================================================== */}
-      {/* TAB 4: 2G / USSD SIMULATION                                          */}
-      {/* ==================================================================== */}
-      {activeTab === 'ussd' && (
-        <div className="max-w-md mx-auto rounded-3xl bg-stone-900 text-stone-100 p-6 space-y-4 shadow-xl border-4 border-stone-800">
-          <div className="text-center border-b border-stone-800 pb-3">
-            <span className="text-[10px] font-mono text-amber-400 font-bold">2G Feature Phone • USSD *134*2742#</span>
-          </div>
-
-          <div className="bg-black/90 font-mono text-xs p-4 rounded-xl space-y-3 text-emerald-400 border border-emerald-900/60">
-            <p>BRICS CivicPulse Offline USSD Gateway:</p>
-            <p>1. Water Supply Deficit</p>
-            <p>2. Road & Bridge Damage</p>
-            <p>3. Power Grid Outage</p>
-            <p>4. Healthcare Access Gap</p>
-            <p>5. Enter Pincode Location</p>
-            <p className="text-amber-300 pt-2">&gt; Reply with option [1-5]:</p>
-          </div>
-
-          <div className="flex items-center space-x-2">
-            <input
-              type="text"
-              placeholder="e.g. 1*424001#"
-              className="w-full px-3 py-2 rounded-xl bg-stone-800 border border-stone-700 text-stone-100 text-xs font-mono"
-            />
-          </div>
+      {(activeTab === 'whatsapp' || activeTab === 'ussd') && (
+        <div className="max-w-4xl mx-auto space-y-6">
+          <WhatsAppUSSDSimulator />
         </div>
       )}
 
