@@ -43,6 +43,7 @@ import { SEED_SUBMISSIONS } from '@/data/seed-data';
 import DataStatusBadge from '@/components/DataStatusBadge';
 import PrototypeDisclosure from '@/components/PrototypeDisclosure';
 import WhatsAppUSSDSimulator from '@/components/WhatsAppUSSDSimulator';
+import PhotoUploadCapture from '@/components/PhotoUploadCapture';
 
 export default function CitizenPage() {
   const [activeTab, setActiveTab] = useState<'submit' | 'track' | 'whatsapp' | 'ussd'>('submit');
@@ -54,6 +55,7 @@ export default function CitizenPage() {
 
   // Form State
   const [rawText, setRawText] = useState('');
+  const [photos, setPhotos] = useState<string[]>([]);
   const [category, setCategory] = useState<InfrastructureDomain>('water');
   const [subcategory, setSubcategory] = useState('Potable Water Supply Deficit');
   const [urgency, setUrgency] = useState<UrgencyLevel>('high');
@@ -206,6 +208,7 @@ export default function CitizenPage() {
           { field: 'district', value: district, confidence: 0.94 },
         ],
         aiConfidenceScore: aiConfidence,
+        photos: photos.length > 0 ? photos : undefined,
         status: 'submitted',
         isAssisted: channel === 'assisted_desk',
         citizenConsent: {
@@ -624,6 +627,16 @@ export default function CitizenPage() {
                   <span className="text-stone-600 font-sans font-semibold">Triage Desk Status:</span>
                   <span className="text-emerald-700 font-extrabold uppercase bg-emerald-100 px-2 py-0.5 rounded">{submittedRecord.status}</span>
                 </div>
+                {submittedRecord.photos && submittedRecord.photos.length > 0 && (
+                  <div className="pt-2 border-t border-orange-200/60 text-left">
+                    <span className="text-stone-600 font-sans font-semibold block mb-2">Attached Site Evidence Photos ({submittedRecord.photos.length}):</span>
+                    <div className="grid grid-cols-3 gap-2">
+                      {submittedRecord.photos.map((p, pIdx) => (
+                        <img key={pIdx} src={p} alt={`Evidence ${pIdx + 1}`} className="w-full h-16 object-cover rounded-xl border border-orange-300" />
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
@@ -631,6 +644,7 @@ export default function CitizenPage() {
                   onClick={() => {
                     setSubmittedRecord(null);
                     setRawText('');
+                    setPhotos([]);
                   }}
                   className="px-5 py-2.5 rounded-xl bg-stone-100 hover:bg-stone-200 text-xs font-bold text-stone-800 transition-colors border border-stone-300"
                 >
@@ -701,6 +715,7 @@ export default function CitizenPage() {
                   onLanguageChange={(l) => setSelectedLanguage(l)}
                   onTranscriptionComplete={handleAIResult}
                 />
+
 
               </div>
 
@@ -827,6 +842,17 @@ export default function CitizenPage() {
                       Your GPS coords ({latitude.toFixed(3)}, {longitude.toFixed(3)}) are clustered into 300m buffers for public heatmaps while municipal workers receive exact repair points.
                     </div>
                   </div>
+                </div>
+
+                {/* Photo Upload & Camera Capture (Max 3) - Positioned Right Below Captured Location & Pincode */}
+                <div className="rounded-3xl bg-white border-2 border-orange-200 shadow-sm p-6 space-y-3">
+                  <PhotoUploadCapture
+                    photos={photos}
+                    onChange={setPhotos}
+                    maxPhotos={3}
+                    label="Attach Site Photos / समस्या की फोटो जोड़ें (अधिकतम 3)"
+                    helperText="Click photo from camera or upload up to 3 images from your phone or device."
+                  />
                 </div>
 
                 {/* Consent & Submit Card */}
@@ -1223,6 +1249,17 @@ export default function CitizenPage() {
                       <p className="text-stone-900 font-mono mt-0.5">{new Date(trackedSubmission.timestamp).toLocaleString()}</p>
                     </div>
                   </div>
+
+                  {trackedSubmission.photos && trackedSubmission.photos.length > 0 && (
+                    <div className="pt-3 border-t border-orange-200 space-y-2">
+                      <span className="text-stone-700 font-bold text-xs block">Attached Site Evidence Photos ({trackedSubmission.photos.length}):</span>
+                      <div className="grid grid-cols-3 gap-2.5">
+                        {trackedSubmission.photos.map((p, pIdx) => (
+                          <img key={pIdx} src={p} alt={`Evidence ${pIdx + 1}`} className="w-full h-24 object-cover rounded-2xl border-2 border-orange-200 shadow-2xs" />
+                        ))}
+                      </div>
+                    </div>
+                  )}
 
                   {/* Feedback rating if resolved or investigated */}
                   <div className="pt-4 border-t border-orange-200 space-y-3">

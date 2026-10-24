@@ -189,7 +189,8 @@ export function localSemanticExtraction(text: string, lang: string = 'en'): Omit
 // Provider 1: Google Gemini API Call
 // ----------------------------------------------------------------------------
 async function callGeminiExtraction(text: string, lang: string, apiKey: string): Promise<Omit<AIExtractionResult, 'latencyMs' | 'fallbackOccurred'>> {
-  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+  const models = ['gemini-3.1-flash-lite', 'gemini-3.8-flash', 'gemini-flash-latest'];
+  let lastError: any = null;
 
   const prompt = `You are an expert AI for BRICS Digital Public Infrastructure & Civic Governance.
 Analyze this citizen submission (Language: ${lang}) and extract structured JSON matching this EXACT schema:
@@ -224,35 +225,57 @@ ${text}
 
 Return ONLY the raw JSON object, without any markdown backticks or commentary.`;
 
-  const response = await fetch(endpoint, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: {
-        responseMimeType: 'application/json',
-        temperature: 0.1,
-      },
-    }),
-  });
+  for (const model of models) {
+    try {
+      const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 3500);
 
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`Gemini API Error (${response.status}): ${errorText}`);
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        signal: controller.signal,
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: {
+            responseMimeType: 'application/json',
+            temperature: 0.1,
+          },
+        }),
+      });
+      clearTimeout(timer);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Gemini API (${model}) Error (${response.status}): ${errorText}`);
+      }
+
+      clearTimeout(timer);
+  clearTimeout(timer);
+  const json = await response.json();
+      const rawContent = json.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (!rawContent) throw new Error(`Gemini (${model}) returned empty response parts`);
+
+      let cleanJson = rawContent.replace(/```json/g, '').replace(/```/g, '').trim();
+      const firstBrace = cleanJson.indexOf('{');
+      const lastBrace = cleanJson.lastIndexOf('}');
+      if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
+        cleanJson = cleanJson.substring(firstBrace, lastBrace + 1);
+      }
+      const parsed = JSON.parse(cleanJson);
+
+      return {
+        ...parsed,
+        providerUsed: 'gemini',
+        modelName: model,
+      };
+    } catch (err: any) {
+      lastError = err;
+      if (err.name === 'AbortError') break;
+    }
   }
 
-  const json = await response.json();
-  const rawContent = json.candidates?.[0]?.content?.parts?.[0]?.text;
-  if (!rawContent) throw new Error('Gemini returned empty response parts');
-
-  const cleanJson = rawContent.replace(/```json/g, '').replace(/```/g, '').trim();
-  const parsed = JSON.parse(cleanJson);
-
-  return {
-    ...parsed,
-    providerUsed: 'gemini',
-    modelName: 'gemini-1.5-flash',
-  };
+  throw lastError || new Error('All Gemini endpoints failed');
 }
 
 // ----------------------------------------------------------------------------
@@ -287,14 +310,17 @@ Extract structured JSON matching:
 }
 Output STRICT JSON ONLY.`;
 
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 2000);
   const response = await fetch(endpoint, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${apiKey}`,
     },
+    signal: controller.signal,
     body: JSON.stringify({
-      model: 'llama-3.3-70b-versatile',
+      model: 'openai/gpt-oss-120b',
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: `Analyze: ${text}` },
@@ -317,7 +343,7 @@ Output STRICT JSON ONLY.`;
   return {
     ...parsed,
     providerUsed: 'groq',
-    modelName: 'groq/llama-3.3-70b-versatile',
+    modelName: 'groq/openai/gpt-oss-120b',
   };
 }
 
@@ -341,14 +367,17 @@ async function callOpenRouterExtraction(text: string, lang: string, apiKey: stri
   "plainLanguageSummary": "string"
 }`;
 
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 2000);
   const response = await fetch(endpoint, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${apiKey}`,
-      'HTTP-Referer': 'https://brics-civicpulse.gov',
+      'HTTP-Referer': 'https://brics-civicpulse.vercel.app',
       'X-Title': 'BRICS CivicPulse',
     },
+    signal: controller.signal,
     body: JSON.stringify({
       model: 'meta-llama/llama-3.3-70b-instruct',
       messages: [

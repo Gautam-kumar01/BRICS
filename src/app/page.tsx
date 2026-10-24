@@ -46,6 +46,7 @@ import AIPipelineVisualizer from '@/components/AIPipelineVisualizer';
 import DataStatusBadge from '@/components/DataStatusBadge';
 import WhatsAppUSSDSimulator from '@/components/WhatsAppUSSDSimulator';
 import AIPolicyLensSimulator from '@/components/AIPolicyLensSimulator';
+import PhotoUploadCapture from '@/components/PhotoUploadCapture';
 
 export default function HomePage() {
   const router = useRouter();
@@ -61,6 +62,7 @@ export default function HomePage() {
   // Homepage Direct Complaint Submission State
   const [sandboxText, setSandboxText] = useState('');
   const [sandboxLocation, setSandboxLocation] = useState<LiveLocationData | null>(null);
+  const [sandboxPhotos, setSandboxPhotos] = useState<string[]>([]);
   const [sandboxPhone, setSandboxPhone] = useState('');
   const [isSubmittingSandbox, setIsSubmittingSandbox] = useState(false);
   const [submittedSandboxRecord, setSubmittedSandboxRecord] = useState<CitizenSubmission | null>(null);
@@ -251,6 +253,7 @@ export default function HomePage() {
           { field: 'district', value: loc.district, confidence: 0.94 },
         ],
         aiConfidenceScore: demoResult?.confidenceScore || 0.92,
+        photos: sandboxPhotos.length > 0 ? sandboxPhotos : undefined,
         status: 'submitted',
         citizenConsent: {
           dataAnalytics: true,
@@ -677,6 +680,17 @@ export default function HomePage() {
 
               </div>
 
+              {trackedSubmission.photos && trackedSubmission.photos.length > 0 && (
+                <div className="pt-2 border-t border-orange-500/20 space-y-2">
+                  <span className="text-orange-300 font-bold text-xs font-mono block">Attached Site Evidence Photos ({trackedSubmission.photos.length}):</span>
+                  <div className="grid grid-cols-3 gap-2.5">
+                    {trackedSubmission.photos.map((p, pIdx) => (
+                      <img key={pIdx} src={p} alt={`Evidence ${pIdx + 1}`} className="w-full h-24 object-cover rounded-2xl border border-orange-500/40" />
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Nodal Metadata Bar */}
               <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-orange-500/20 text-xs text-stone-300 font-mono">
                 <div className="flex items-center space-x-2">
@@ -980,6 +994,17 @@ export default function HomePage() {
                 </div>
                 <div className="text-[10px] text-stone-500 font-medium">SLA Priority: &lt; 24h</div>
               </div>
+            </div>
+
+            {/* Photo Upload & Camera Capture (Max 3) */}
+            <div className="p-5 rounded-2xl bg-white border-2 border-orange-200 shadow-2xs">
+              <PhotoUploadCapture
+                photos={sandboxPhotos}
+                onChange={setSandboxPhotos}
+                maxPhotos={3}
+                label="Attach Site Photos / समस्या की फोटो जोड़ें (अधिकतम 3)"
+                helperText="Click photo from camera or upload up to 3 images from your phone/device."
+              />
             </div>
 
             {/* Mobile Phone Input & Submit Action Bar */}

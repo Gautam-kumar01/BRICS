@@ -367,6 +367,11 @@ export default function OperationsPage() {
                           Assisted
                         </span>
                       )}
+                      {sub.photos && sub.photos.length > 0 && (
+                        <span className="px-1.5 py-0.2 rounded-full bg-orange-100 text-orange-800 text-[10px] font-mono font-bold border border-orange-300">
+                          📷 {sub.photos.length}
+                        </span>
+                      )}
                     </div>
                     <span className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase ${
                       sub.urgency === 'critical' ? 'bg-red-50 text-red-700 border border-red-200' :
@@ -456,6 +461,41 @@ export default function OperationsPage() {
                   GPS: {selectedSub.location.latitude?.toFixed(4)}, {selectedSub.location.longitude?.toFixed(4)}
                 </div>
               </div>
+
+              {/* Citizen Attached Evidence Photos */}
+              {selectedSub.photos && selectedSub.photos.length > 0 && (
+                <div className="p-4 rounded-2xl bg-white border border-stone-200 shadow-2xs space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-stone-800 font-bold uppercase text-[10px] tracking-wider">
+                      Attached Ground Truth Site Photos ({selectedSub.photos.length})
+                    </span>
+                    <span className="text-[10px] font-mono text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                      Citizen Verified Evidence
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-3 gap-3">
+                    {selectedSub.photos.map((src, idx) => (
+                      <a
+                        key={idx}
+                        href={src}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="group relative rounded-xl overflow-hidden border border-orange-200 aspect-video block bg-stone-900"
+                        title="Click to view full image"
+                      >
+                        <img
+                          src={src}
+                          alt={`Evidence ${idx + 1}`}
+                          className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                        />
+                        <span className="absolute bottom-1 right-1 px-1.5 py-0.5 rounded bg-black/70 text-white font-mono text-[9px]">
+                          Photo #{idx + 1}
+                        </span>
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* Original vs Translated */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">

@@ -113,6 +113,7 @@ export interface CitizenSubmission {
     submittedAt: string;
   };
   aiProviderUsed?: string;
+  photos?: string[]; // Site/evidence photos uploaded or captured by citizen (max 3)
   updatedAt: string;
   provenance?: DataProvenanceInfo;
   dataProvenance?: DataProvenanceInfo;
