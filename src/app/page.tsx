@@ -34,12 +34,13 @@ import {
   RefreshCw,
   ExternalLink,
   ChevronRight,
-  SlidersHorizontal
+  SlidersHorizontal,
+  ShieldAlert
 } from 'lucide-react';
 import MapComponent from '@/components/MapComponent';
 import VoiceRecorder, { LiveLocationData } from '@/components/VoiceRecorder';
 import { SEED_CLUSTERS, SEED_SUBMISSIONS } from '@/data/seed-data';
-import { SupportedLanguage, CitizenSubmission } from '@/types';
+import { SupportedLanguage, CitizenSubmission, PhotoVerificationResult } from '@/types';
 import { useLanguage } from '@/context/LanguageContext';
 import PrototypeDisclosure from '@/components/PrototypeDisclosure';
 import AIPipelineVisualizer from '@/components/AIPipelineVisualizer';
@@ -63,6 +64,8 @@ export default function HomePage() {
   const [sandboxText, setSandboxText] = useState('');
   const [sandboxLocation, setSandboxLocation] = useState<LiveLocationData | null>(null);
   const [sandboxPhotos, setSandboxPhotos] = useState<string[]>([]);
+  const [sandboxPhotoVerifications, setSandboxPhotoVerifications] = useState<(PhotoVerificationResult | null)[]>([]);
+  const [areSandboxPhotosValid, setAreSandboxPhotosValid] = useState<boolean>(true);
   const [sandboxPhone, setSandboxPhone] = useState('');
   const [isSubmittingSandbox, setIsSubmittingSandbox] = useState(false);
   const [submittedSandboxRecord, setSubmittedSandboxRecord] = useState<CitizenSubmission | null>(null);
@@ -214,6 +217,11 @@ export default function HomePage() {
       return;
     }
 
+    if (sandboxPhotos.length > 0 && !areSandboxPhotosValid) {
+      alert('⚠️ Submission Blocked: One or more attached photos were rejected by AI Evidence Verification (Non-infrastructure, fake/blurry, or domain mismatch). Please remove the rejected photo or attach authentic evidence matching your issue.');
+      return;
+    }
+
     setIsSubmittingSandbox(true);
     try {
       const loc = sandboxLocation || {
@@ -254,6 +262,7 @@ export default function HomePage() {
         ],
         aiConfidenceScore: demoResult?.confidenceScore || 0.92,
         photos: sandboxPhotos.length > 0 ? sandboxPhotos : undefined,
+        photoVerifications: sandboxPhotoVerifications.filter(Boolean) as PhotoVerificationResult[],
         status: 'submitted',
         citizenConsent: {
           dataAnalytics: true,
@@ -1002,8 +1011,15 @@ export default function HomePage() {
                 photos={sandboxPhotos}
                 onChange={setSandboxPhotos}
                 maxPhotos={3}
+                domain={demoResult?.category || 'water'}
+                complaintText={sandboxText || demoResult?.plainLanguageSummary || ''}
+                location={sandboxLocation ? `${sandboxLocation.district}, PIN: ${sandboxLocation.pincode}, ${sandboxLocation.country}` : 'Jehanabad, PIN: 804408, India'}
+                onVerificationChange={(allValid, results) => {
+                  setAreSandboxPhotosValid(allValid);
+                  setSandboxPhotoVerifications(results);
+                }}
                 label="Attach Site Photos / समस्या की फोटो जोड़ें (अधिकतम 3)"
-                helperText="Click photo from camera or upload up to 3 images from your phone/device."
+                helperText="Click photo from camera or upload up to 3 images from your phone/device. AI will verify authenticity and domain match."
               />
             </div>
 
@@ -1026,8 +1042,8 @@ export default function HomePage() {
 
                 <button
                   type="submit"
-                  disabled={isSubmittingSandbox}
-                  className={`px-8 py-3.5 rounded-2xl font-extrabold text-xs text-white shadow-lg transition-all flex items-center justify-center space-x-2 shrink-0 ${isSubmittingSandbox
+                  disabled={isSubmittingSandbox || (sandboxPhotos.length > 0 && !areSandboxPhotosValid)}
+                  className={`px-8 py-3.5 rounded-2xl font-extrabold text-xs text-white shadow-lg transition-all flex items-center justify-center space-x-2 shrink-0 ${isSubmittingSandbox || (sandboxPhotos.length > 0 && !areSandboxPhotosValid)
                       ? 'bg-stone-400 cursor-not-allowed'
                       : 'bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 hover:from-orange-600 hover:to-amber-600 shadow-orange-500/30 hover:scale-[1.02] active:scale-95 cursor-pointer'
                     }`}
@@ -1036,6 +1052,11 @@ export default function HomePage() {
                     <>
                       <Sparkles className="w-4 h-4 animate-spin" />
                       <span>Registering Official Complaint...</span>
+                    </>
+                  ) : (sandboxPhotos.length > 0 && !areSandboxPhotosValid) ? (
+                    <>
+                      <ShieldAlert className="w-4 h-4 text-red-200" />
+                      <span>Photo Rejected by AI — Remove to Submit</span>
                     </>
                   ) : (
                     <>

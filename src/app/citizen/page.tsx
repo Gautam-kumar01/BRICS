@@ -34,10 +34,11 @@ import {
   BellRing,
   CheckCheck,
   Truck,
-  Wrench
+  Wrench,
+  ShieldAlert
 } from 'lucide-react';
 import VoiceRecorder, { LiveLocationData } from '@/components/VoiceRecorder';
-import { CitizenSubmission, SupportedLanguage, SubmissionChannel, InfrastructureDomain, UrgencyLevel } from '@/types';
+import { CitizenSubmission, SupportedLanguage, SubmissionChannel, InfrastructureDomain, UrgencyLevel, PhotoVerificationResult } from '@/types';
 import { AIExtractionResult } from '@/lib/ai/ai-gateway';
 import { SEED_SUBMISSIONS } from '@/data/seed-data';
 import DataStatusBadge from '@/components/DataStatusBadge';
@@ -56,6 +57,8 @@ export default function CitizenPage() {
   // Form State
   const [rawText, setRawText] = useState('');
   const [photos, setPhotos] = useState<string[]>([]);
+  const [photoVerifications, setPhotoVerifications] = useState<(PhotoVerificationResult | null)[]>([]);
+  const [arePhotosValid, setArePhotosValid] = useState<boolean>(true);
   const [category, setCategory] = useState<InfrastructureDomain>('water');
   const [subcategory, setSubcategory] = useState('Potable Water Supply Deficit');
   const [urgency, setUrgency] = useState<UrgencyLevel>('high');
@@ -178,6 +181,11 @@ export default function CitizenPage() {
       return;
     }
 
+    if (photos.length > 0 && !arePhotosValid) {
+      alert('⚠️ Submission Blocked: One or more attached photos were rejected by AI Evidence Verification (Non-infrastructure, fake/blurry, or domain mismatch). Please remove the rejected photo or attach authentic evidence matching your issue.');
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       const payload = {
@@ -209,6 +217,7 @@ export default function CitizenPage() {
         ],
         aiConfidenceScore: aiConfidence,
         photos: photos.length > 0 ? photos : undefined,
+        photoVerifications: photoVerifications.filter(Boolean) as PhotoVerificationResult[],
         status: 'submitted',
         isAssisted: channel === 'assisted_desk',
         citizenConsent: {
@@ -850,8 +859,15 @@ export default function CitizenPage() {
                     photos={photos}
                     onChange={setPhotos}
                     maxPhotos={3}
+                    domain={category}
+                    complaintText={rawText}
+                    location={`${district}, PIN: ${pincode}, ${country}`}
+                    onVerificationChange={(allValid, results) => {
+                      setArePhotosValid(allValid);
+                      setPhotoVerifications(results);
+                    }}
                     label="Attach Site Photos / समस्या की फोटो जोड़ें (अधिकतम 3)"
-                    helperText="Click photo from camera or upload up to 3 images from your phone or device."
+                    helperText="Click photo from camera or upload up to 3 images from your phone or device. AI will verify authenticity and domain match."
                   />
                 </div>
 
@@ -914,9 +930,9 @@ export default function CitizenPage() {
                   {/* Submit Button */}
                   <button
                     type="submit"
-                    disabled={isSubmitting || !rawText.trim()}
+                    disabled={isSubmitting || !rawText.trim() || (photos.length > 0 && !arePhotosValid)}
                     className={`w-full py-3.5 rounded-2xl font-extrabold text-xs uppercase tracking-wider flex items-center justify-center space-x-2 transition-all shadow-md ${
-                      !rawText.trim() || isSubmitting
+                      !rawText.trim() || isSubmitting || (photos.length > 0 && !arePhotosValid)
                         ? 'bg-stone-200 text-stone-400 cursor-not-allowed border border-stone-300'
                         : 'bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-orange-500/25 hover:from-orange-600 hover:to-amber-600 active:scale-98'
                     }`}
@@ -925,6 +941,11 @@ export default function CitizenPage() {
                       <>
                         <Sparkles className="w-4 h-4 animate-spin" />
                         <span>Transmitting to Municipal Triage Desk...</span>
+                      </>
+                    ) : (photos.length > 0 && !arePhotosValid) ? (
+                      <>
+                        <ShieldAlert className="w-4 h-4 text-red-500" />
+                        <span>Photo Rejected by AI — Remove or Fix</span>
                       </>
                     ) : (
                       <>

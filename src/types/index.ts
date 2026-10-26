@@ -114,6 +114,7 @@ export interface CitizenSubmission {
   };
   aiProviderUsed?: string;
   photos?: string[]; // Site/evidence photos uploaded or captured by citizen (max 3)
+  photoVerifications?: PhotoVerificationResult[]; // 3-Layer AI Evidence Verification results
   updatedAt: string;
   provenance?: DataProvenanceInfo;
   dataProvenance?: DataProvenanceInfo;
@@ -128,6 +129,27 @@ export interface CitizenSubmission {
     dispatchId?: string;
     note?: string;
     error?: string;
+  };
+}
+
+export interface PhotoVerificationResult {
+  isValid: boolean;
+  decision: 'APPROVED' | 'REJECTED' | 'SUSPICIOUS';
+  confidenceScore: number;
+  detectedContent: string;
+  detectedDomain?: string;
+  officerVerdict: string;
+  reason: string;
+  layers: {
+    layer1_isInfrastructure: boolean;
+    layer1_status: 'PASS' | 'FAIL';
+    layer1_details: string;
+    layer2_isAuthenticPhoto: boolean;
+    layer2_status: 'PASS' | 'FAIL' | 'SUSPICIOUS';
+    layer2_details: string;
+    layer3_matchesComplaint: boolean;
+    layer3_status: 'PASS' | 'FAIL';
+    layer3_details: string;
   };
 }
 
