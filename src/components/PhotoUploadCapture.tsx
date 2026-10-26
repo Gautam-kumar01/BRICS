@@ -102,14 +102,14 @@ export default function PhotoUploadCapture({
     }
 
     const resultsList = photos.map((_, idx) => verifications[idx] || null);
-    // If any photo is rejected, allValid is false
+    const isAnyPending = photos.some((_, idx) => !verifications[idx] || verifyingIndices.has(idx));
     const hasRejected = resultsList.some(r => r && r.isValid === false);
-    const allValid = !hasRejected;
+    const allValid = !isAnyPending && !hasRejected && resultsList.every(r => r && r.isValid === true);
 
     if (onVerificationChange) {
       onVerificationChange(allValid, resultsList);
     }
-  }, [photos, verifications]);
+  }, [photos, verifications, verifyingIndices]);
 
   /**
    * Triggers the 3-Layer AI Evidence Inspection via /api/ai/verify-photo

@@ -98,7 +98,8 @@ async function callGeminiVision(
   location: string,
   apiKey: string
 ): Promise<PhotoVerificationResult> {
-  const models = ['gemini-3.8-flash', 'gemini-3.1-flash-lite', 'gemini-flash-latest', 'gemini-2.5-flash'];
+  // Proven fastest & most active vision models on Gemini API
+  const models = ['gemini-flash-lite-latest', 'gemini-3.5-flash-lite', 'gemini-3.1-flash-lite', 'gemini-3.8-flash'];
 
   const prompt = `You are a strict, experienced Municipal Infrastructure Verification Officer inspecting citizen photo evidence for Digital Public Infrastructure (CivicPulse).
 
@@ -110,47 +111,54 @@ A citizen has registered a grievance with the following details:
 Inspect this attached image thoroughly through these 3 MANDATORY LAYERS:
 
 Layer 1 - What is in photo:
-Look at the image carefully. Is it really showing public/municipal infrastructure (roads, bridges, culverts, water pipelines, potable water leakage/contamination, electricity transformers/wires, poles, garbage heaps, open drains, public health clinic hazard, telecom pole/fiber)?
-Or is it a selfie, human face, portrait, pet/animal, food/dish, meme, cartoon, screenshot, document, indoor furniture, bedroom, car interior, or random internet image? If it's NOT genuine public infrastructure, REJECT IT IMMEDIATELY (isValid = false).
+Look at the image carefully. Is it really showing public/municipal infrastructure (roads, potholes, asphalt, bridges, culverts, water pipelines, potable water leakage/contamination, electricity transformers/wires, poles, garbage heaps, open drains, public health clinic hazard, telecom pole/fiber)?
+CRITICAL REJECTION RULES FOR LAYER 1:
+- Animals or pets (dogs, cats, cattle, birds, etc.) -> REJECT (NOT INFRASTRUCTURE).
+- Human faces, selfies, portraits, group photos, clothes, shoes -> REJECT (NOT INFRASTRUCTURE).
+- Food, dishes, kitchen items, groceries -> REJECT (NOT INFRASTRUCTURE).
+- Digital screenshots (phone screen, computer screen, WhatsApp chats, emails, schedules, timetables, Google Meet, apps, websites) -> REJECT (NOT INFRASTRUCTURE).
+- Paper documents (handwritten notes, question papers, letters, forms, certificates, books) -> REJECT (NOT INFRASTRUCTURE).
+- Memes, cartoons, drawings, anime, or indoor bedrooms/living rooms -> REJECT (NOT INFRASTRUCTURE).
+If it's NOT genuine public municipal outdoor infrastructure, REJECT IT IMMEDIATELY (isValid = false, decision = "REJECTED").
 
 Layer 2 - Real or fake:
 Check if the photo looks like an authentic camera photo from a real scene.
-If the photo is completely black, completely white, extremely blurry/unrecognizable, a computer screenshot with text/UI buttons, an AI-generated image, or heavily filtered/edited, mark it as suspicious/rejected (isValid = false). Check if it plausibly matches real street conditions.
+If the photo is completely black, completely white, extremely blurry/unrecognizable, a computer screenshot with text/UI buttons, an AI-generated image, or heavily filtered/edited, mark it as suspicious/rejected (isValid = false, decision = "REJECTED").
 
 Layer 3 - Matching with complaint:
 Does the photo match the citizen's claimed domain and description?
-- If citizen claimed "roads" but photo shows water leak, garbage, electricity, or an indoor room -> MISMATCH (REJECT).
+- If citizen claimed "roads" but photo shows an animal, dog, paper, water, garbage, electricity, or an indoor room -> MISMATCH (REJECT).
 - If citizen claimed "water" but photo shows a dry pothole, electric pole, animal, or selfie -> MISMATCH (REJECT).
 - If citizen claimed "energy" but photo shows a water puddle or garbage -> MISMATCH (REJECT).
 - If citizen claimed "sanitation" but photo shows an electric transformer or road bridge -> MISMATCH (REJECT).
-The photo MUST correspond to the claimed domain "${domain.toUpperCase()}" and the issue described "${complaintText}".
+The photo MUST correspond directly to the claimed domain "${domain.toUpperCase()}" and the issue described "${complaintText}".
 
 After checking all 3 layers, provide your official verdict in simple, human officer words. Speak like a real human officer checking photos.
 
 Return ONLY a valid JSON object matching this schema:
 {
-  "isValid": true,
-  "decision": "APPROVED",
+  "isValid": false,
+  "decision": "REJECTED",
   "confidenceScore": 0.95,
-  "detectedContent": "Asphalt road with severe waterlogged pothole and cracked pavement",
+  "detectedContent": "A domestic dog standing outdoors / A digital screenshot of email / Broken asphalt road with deep pothole",
   "detectedDomain": "roads",
-  "officerVerdict": "Photo verified. Genuine outdoor camera evidence showing severe road pavement damage matching your reported road issue in the district.",
-  "reason": "Authentic site evidence matching claimed Roads domain and pothole issue.",
+  "officerVerdict": "Officer statement explaining in simple words whether valid or why rejected.",
+  "reason": "Clear explanation of which layer failed or passed.",
   "layers": {
-    "layer1_isInfrastructure": true,
-    "layer1_status": "PASS",
-    "layer1_details": "Confirmed public road and asphalt infrastructure.",
+    "layer1_isInfrastructure": false,
+    "layer1_status": "FAIL",
+    "layer1_details": "Details on what was detected.",
     "layer2_isAuthenticPhoto": true,
     "layer2_status": "PASS",
-    "layer2_details": "Genuine camera capture with natural lighting and street textures.",
-    "layer3_matchesComplaint": true,
-    "layer3_status": "PASS",
-    "layer3_details": "Image directly shows pothole road damage matching citizen description."
+    "layer2_details": "Quality inspection details.",
+    "layer3_matchesComplaint": false,
+    "layer3_status": "FAIL",
+    "layer3_details": "Domain alignment details."
   }
 }
 
 If any layer fails, set "isValid": false and "decision": "REJECTED".
-Be strict: do not allow non-infrastructure photos, selfies, memes, or domain mismatches.
+Be strict: do not allow animals, selfies, memes, screenshots, or domain mismatches.
 Return ONLY raw JSON, with no markdown code blocks or backticks.`;
 
   let lastError: any = null;
@@ -159,7 +167,7 @@ Return ONLY raw JSON, with no markdown code blocks or backticks.`;
     try {
       const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
       const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), 6000); // 6 sec timeout
+      const timer = setTimeout(() => controller.abort(), 12000); // 12 sec timeout per model
 
       const response = await fetch(endpoint, {
         method: 'POST',
@@ -203,30 +211,33 @@ Return ONLY raw JSON, with no markdown code blocks or backticks.`;
       }
       const parsed = JSON.parse(clean);
 
+      const isValid = Boolean(parsed.isValid);
+
       return {
-        isValid: Boolean(parsed.isValid),
-        decision: parsed.decision || (parsed.isValid ? 'APPROVED' : 'REJECTED'),
-        confidenceScore: typeof parsed.confidenceScore === 'number' ? parsed.confidenceScore : 0.92,
+        isValid,
+        decision: parsed.decision || (isValid ? 'APPROVED' : 'REJECTED'),
+        confidenceScore: typeof parsed.confidenceScore === 'number' ? parsed.confidenceScore : 0.95,
         detectedContent: parsed.detectedContent || 'Inspected photo evidence',
         detectedDomain: parsed.detectedDomain || domain,
-        officerVerdict: parsed.officerVerdict || (parsed.isValid ? 'Photo verified by AI Officer.' : 'Photo rejected by AI Officer.'),
-        reason: parsed.reason || (parsed.isValid ? 'Evidence verified successfully.' : 'Photo failed verification standards.'),
+        officerVerdict: parsed.officerVerdict || (isValid ? 'Photo verified by AI Officer.' : 'Photo rejected by AI Officer.'),
+        reason: parsed.reason || (isValid ? 'Evidence verified successfully.' : 'Photo failed verification standards.'),
         layers: {
           layer1_isInfrastructure: Boolean(parsed.layers?.layer1_isInfrastructure),
           layer1_status: parsed.layers?.layer1_status || (parsed.layers?.layer1_isInfrastructure ? 'PASS' : 'FAIL'),
-          layer1_details: parsed.layers?.layer1_details || 'Layer 1 evaluated.',
+          layer1_details: parsed.layers?.layer1_details || (isValid ? 'Infrastructure verified.' : 'Non-infrastructure content detected.'),
           layer2_isAuthenticPhoto: Boolean(parsed.layers?.layer2_isAuthenticPhoto),
           layer2_status: parsed.layers?.layer2_status || (parsed.layers?.layer2_isAuthenticPhoto ? 'PASS' : 'FAIL'),
-          layer2_details: parsed.layers?.layer2_details || 'Layer 2 evaluated.',
+          layer2_details: parsed.layers?.layer2_details || 'Visual quality evaluated.',
           layer3_matchesComplaint: Boolean(parsed.layers?.layer3_matchesComplaint),
           layer3_status: parsed.layers?.layer3_status || (parsed.layers?.layer3_matchesComplaint ? 'PASS' : 'FAIL'),
-          layer3_details: parsed.layers?.layer3_details || 'Layer 3 evaluated.'
+          layer3_details: parsed.layers?.layer3_details || 'Complaint alignment evaluated.'
         }
       };
 
     } catch (err: any) {
       lastError = err;
-      if (err.name === 'AbortError') break;
+      console.warn(`[Gemini Vision ${model}]:`, err.message);
+      // Try next model in sequence
     }
   }
 
@@ -235,7 +246,8 @@ Return ONLY raw JSON, with no markdown code blocks or backticks.`;
 
 /**
  * Smart Fallback Semantic Image Inspector
- * Ensures zero-downtime operation and evaluates basic payload integrity and heuristics
+ * CRITICAL RULE: Never blindly approve photos if AI verification is unavailable.
+ * Strictly flags unverified photos for safety.
  */
 function smartFallbackImageVerification(
   base64Data: string,
@@ -244,14 +256,13 @@ function smartFallbackImageVerification(
 ): PhotoVerificationResult {
   const byteLength = Math.round((base64Data.length * 3) / 4);
   const normalizedDomain = domain.toLowerCase();
-  const lowerText = complaintText.toLowerCase();
 
   // If payload is under 1KB, likely corrupt or completely blank
   if (byteLength < 1024) {
     return {
       isValid: false,
       decision: 'REJECTED',
-      confidenceScore: 0.95,
+      confidenceScore: 0.99,
       detectedContent: 'Extremely low-resolution or blank image data (< 1KB)',
       officerVerdict: 'Officer Note: Rejected at Layer 2. The attached image file is too small or blank to inspect. Please take a clear photo of the site.',
       reason: 'Photo is blank, corrupted, or under minimum visual resolution.',
@@ -269,32 +280,25 @@ function smartFallbackImageVerification(
     };
   }
 
-  // Heuristic verification for valid uploaded evidence
-  const domainLabel = normalizedDomain === 'water' ? 'Water Supply & Pipelines' :
-                      normalizedDomain === 'roads' ? 'Roads, Bridges & Potholes' :
-                      normalizedDomain === 'energy' ? 'Electricity Grid & Transformers' :
-                      normalizedDomain === 'sanitation' ? 'Waste & Open Drainage' :
-                      normalizedDomain === 'health' ? 'Primary Health Clinic Infrastructure' :
-                      normalizedDomain === 'connectivity' ? 'Telecom Towers & Fiber Lines' : 'Civic Infrastructure';
-
+  // Strict conservative fallback: Do NOT blindly approve unknown photos
   return {
-    isValid: true,
-    decision: 'APPROVED',
-    confidenceScore: 0.91,
-    detectedContent: `Real camera capture evidence aligned with ${domainLabel}`,
+    isValid: false,
+    decision: 'REJECTED',
+    confidenceScore: 0.92,
+    detectedContent: 'Unverified Image File (AI Vision Gateway Timeout / Offline)',
     detectedDomain: normalizedDomain,
-    officerVerdict: `Photo verified by AI Officer: Genuine field evidence showing infrastructure conditions matching your reported ${domainLabel} issue.`,
-    reason: `Passed Layer 1 (Infrastructure verified), Layer 2 (Authentic camera evidence), and Layer 3 (Aligned with ${domainLabel}).`,
+    officerVerdict: 'Officer Note: Evidence verification service could not conclusively confirm civic infrastructure in this image. To protect municipal records from invalid submissions, please re-upload a clear on-site photo.',
+    reason: 'Automated 3-Layer check could not confirm physical infrastructure in uploaded file.',
     layers: {
-      layer1_isInfrastructure: true,
-      layer1_status: 'PASS',
-      layer1_details: `Confirmed authentic outdoor infrastructure object related to ${domainLabel}.`,
-      layer2_isAuthenticPhoto: true,
-      layer2_status: 'PASS',
-      layer2_details: `Authentic camera resolution (${Math.round(byteLength / 1024)} KB) with natural compression.`,
-      layer3_matchesComplaint: true,
-      layer3_status: 'PASS',
-      layer3_details: `Evidence aligns with citizen claimed ${domainLabel} issue.`
+      layer1_isInfrastructure: false,
+      layer1_status: 'FAIL',
+      layer1_details: 'Cannot confirm public infrastructure without active visual analysis.',
+      layer2_isAuthenticPhoto: false,
+      layer2_status: 'FAIL',
+      layer2_details: 'Authenticity verification inconclusive.',
+      layer3_matchesComplaint: false,
+      layer3_status: 'FAIL',
+      layer3_details: 'Domain alignment unconfirmed.'
     }
   };
 }
